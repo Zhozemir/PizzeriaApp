@@ -33,10 +33,12 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UserRegisterRequest userRegisterRequest) {
 
-        boolean isValid = authenticationControllerValidator.validateUserRegister(userRegisterRequest);
+        //boolean isValid = authenticationControllerValidator.validateUserRegister(userRegisterRequest);
 
-        if (!isValid)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
+        authenticationControllerValidator.validateUserRegister(userRegisterRequest);
+
+        //if (!isValid)
+            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
 
         boolean success = userService.registerUser(
                 userRegisterRequest.getUsername(),
@@ -46,27 +48,31 @@ public class AuthenticationController {
                 userRegisterRequest.getPhone()
         );
 
-        return success
-                ? ResponseEntity.ok("Регистрацията е успешна")
-                : ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Потребител с това име вече съществува");
+        //return success
+                //? ResponseEntity.ok("Регистрацията е успешна")
+                //: ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Потребител с това име вече съществува");
+
+        return ResponseEntity.ok("Регистрацията е успешна.");
 
     }
 
     @PostMapping("/login")
     public ResponseEntity<UserDTO> login(@RequestBody UserLoginRequest userLoginRequest) {
 
-        boolean isValid = authenticationControllerValidator.validateUserLogin(userLoginRequest);
+        //boolean isValid = authenticationControllerValidator.validateUserLogin(userLoginRequest);
 
-        if(!isValid) {
+        authenticationControllerValidator.validateUserLogin(userLoginRequest);
 
-            return ResponseEntity.badRequest().build();
+        //if(!isValid) {
+
+            //return ResponseEntity.badRequest().build();
             //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни");
 
-        }
+        //}
 
         return userService.login(userLoginRequest.getUsername(), userLoginRequest.getPassword())
                 .map(user -> ResponseEntity.ok(userMapper.toDTO(user)))
-                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+                .orElseThrow(()->new IllegalArgumentException("Грешно потребителско име или парола."));
 
     }
 
