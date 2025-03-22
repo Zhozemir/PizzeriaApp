@@ -1,6 +1,5 @@
 package com.example.PizzeriaApp.controllers.validators;
 
-
 import com.example.PizzeriaApp.controllers.requests.OrderCreateRequest;
 import com.example.PizzeriaApp.enumerators.OrderStatus;
 import org.springframework.stereotype.Component;
@@ -9,32 +8,27 @@ import org.springframework.stereotype.Component;
 public class OrderControllerValidator {
 
 
-    public boolean validateCreateOrder(OrderCreateRequest orderCreateRequest){
+    public void validateCreateOrder(OrderCreateRequest orderCreateRequest){
 
         if(orderCreateRequest == null || orderCreateRequest.getProductIds() == null || orderCreateRequest.getProductIds().isEmpty())
-            return false;
-
-        return true;
+            throw new IllegalArgumentException(String.format("Invalid OrderCreate request [orderCreateRequest: %s]",
+                    orderCreateRequest));
     }
 
-    public boolean validateUpdateOrderStatus(Long id, OrderStatus status){
+    public void validateUpdateOrderStatus(Long id, OrderStatus status){
 
-        if(id == null)
-            return false;
+        if(id == null || status == null || !( (status.toString().toUpperCase().equals("IN_PROGRESS")) || (status.toString().toUpperCase().equals("DELIVERED")) || (status.toString().toUpperCase().equals("CANCELLED")) ) )
+             throw new IllegalArgumentException("Грешни данни за обновяване на статус.");
 
-        if(status == null || !( (status.toString().toUpperCase().equals("IN_PROGRESS")) || (status.toString().toUpperCase().equals("DELIVERED")) || (status.toString().toUpperCase().equals("CANCELLED")) ) )
-            return false;
 
-        return true;
+        // да направя updateOrderRequest... и може би вс останали
 
     }
 
-    public boolean validateRepeatOrder(Long id){
+    public void validateRepeatOrder(Long id){
 
         if(id == null)
-            return false;
-
-        return true;
+            throw new IllegalArgumentException("Невалидни данни за повтрорение на поръчката.");
 
     }
 
