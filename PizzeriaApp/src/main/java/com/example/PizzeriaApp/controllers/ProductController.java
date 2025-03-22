@@ -33,15 +33,16 @@ public class ProductController {
     @PostMapping("/add")
     public ResponseEntity<String> addProduct(@RequestBody ProductCreateRequest productCreateRequest) {
 
-        boolean isValid = productControllerValidator.createProductValidator(productCreateRequest);
+        //boolean isValid = productControllerValidator.createProductValidator(productCreateRequest);
 
-        if(!isValid)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
+        productControllerValidator.createProductValidator(productCreateRequest);
 
-        boolean success = productService.addProduct(productCreateRequest.getName(), productCreateRequest.getPrice());
-        return success
-                ? ResponseEntity.ok("Продуктът е добавен")
-                : ResponseEntity.badRequest().body("Грешка при добавяне на продукта");
+        //if(!isValid)
+            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
+
+        //boolean success = productService.addProduct(productCreateRequest.getName(), productCreateRequest.getPrice());
+        return ResponseEntity.ok("Продуктът е добавен");
+
     }
 
     @GetMapping
@@ -57,15 +58,15 @@ public class ProductController {
     @PutMapping("/{id}/deactivate")
     public ResponseEntity<String> deactivateProduct(@PathVariable Long id) {
 
-        boolean isValid = productControllerValidator.validateDeactivateProduct(id);
+        //boolean isValid = productControllerValidator.validateDeactivateProduct(id);
 
-        if(!isValid)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
+        productControllerValidator.validateDeactivateProduct(id);
 
-        boolean success = productService.deactivateProduct(id);
-        return success
-                ? ResponseEntity.ok("Продуктът е деактивиран")
-                : ResponseEntity.badRequest().body("Грешка при деактивиране на продукта");
+        //if(!isValid)
+            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
+
+        return ResponseEntity.ok("Продуктът е деактивиран");
+
     }
 
 }
