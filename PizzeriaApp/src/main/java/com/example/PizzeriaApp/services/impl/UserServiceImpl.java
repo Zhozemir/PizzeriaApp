@@ -1,5 +1,6 @@
 package com.example.PizzeriaApp.services.impl;
 
+import com.example.PizzeriaApp.domain.exceptions.UserAlreadyExistsException;
 import com.example.PizzeriaApp.enumerators.UserRole;
 import com.example.PizzeriaApp.models.User;
 import com.example.PizzeriaApp.repositories.interfaces.UserDAO;
@@ -21,17 +22,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean registerUser(String username, String password, UserRole role, String name, String phone) {
+    public void registerUser(String username, String password, UserRole role, String name, String phone) {
 
         Optional<User> existingUser = userDAO.findByUsername(username);
 
+       // if(existingUser.isPresent())
+            //return false;
+
         if(existingUser.isPresent())
-            return false;
+            throw new UserAlreadyExistsException();
 
         String hashedPassword = PasswordHashing.hashPassword(password);
         User user = new User(username, hashedPassword, role, name, phone);
 
-        return userDAO.save(user);
+        userDAO.save(user);
 
     }
 
