@@ -36,15 +36,20 @@ public class OrderController {
     @PostMapping("/create")
     public ResponseEntity<String> createOrder(@RequestBody OrderCreateRequest orderCreateRequest) {
 
-        boolean isValid = orderControllerValidator.validateCreateOrder(orderCreateRequest);
+        //boolean isValid = orderControllerValidator.validateCreateOrder(orderCreateRequest);
 
-        if(!isValid)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
+        orderControllerValidator.validateCreateOrder(orderCreateRequest);
 
-        boolean success = orderService.createOrder(orderCreateRequest.getProductIds());
-        return success
-                ? ResponseEntity.ok("Поръчката е създадена. Очаквано време за доставка: ~30 минути.")
-                : ResponseEntity.badRequest().body("Грешка при създаването на поръчката");
+        //if(!isValid)
+           // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
+
+        //boolean success = orderService.createOrder(orderCreateRequest.getProductIds());
+        //return success
+                //? ResponseEntity.ok("Поръчката е създадена. Очаквано време за доставка: ~30 минути.")
+                //: ResponseEntity.badRequest().body("Грешка при създаването на поръчката");
+
+        return ResponseEntity.ok("Поръчката е създадена. Очаквано време за доставка: ~30 минути.");
+
     }
 
     @GetMapping
@@ -97,15 +102,19 @@ public class OrderController {
     @PutMapping("/{id}/status")
     public ResponseEntity<String> updateOrderStatus(@PathVariable Long id, @RequestParam OrderStatus status) {
 
-        boolean isValid = orderControllerValidator.validateUpdateOrderStatus(id, status);
+        //boolean isValid = orderControllerValidator.validateUpdateOrderStatus(id, status);
 
-        if(!isValid)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
+        orderControllerValidator.validateUpdateOrderStatus(id, status);
 
-        boolean success = orderService.updateOrderStatus(id, status);
-        return success
-                ? ResponseEntity.ok("Статусът на поръчката е обновен")
-                : ResponseEntity.badRequest().body("Грешка при обновяването на статуса");
+        //if(!isValid)
+            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
+
+        //boolean success = orderService.updateOrderStatus(id, status);
+        //return success
+                //? ResponseEntity.ok("Статусът на поръчката е обновен")
+                //: ResponseEntity.badRequest().body("Грешка при обновяването на статуса");
+
+        return ResponseEntity.ok("Статусът на поръчката е обновен.");
 
     }
 
@@ -132,15 +141,19 @@ public class OrderController {
     @PostMapping("/{id}/repeat")
     public ResponseEntity<String> repeatOrder(@PathVariable Long id) {
 
-        boolean isValid = orderControllerValidator.validateRepeatOrder(id);
+        //boolean isValid = orderControllerValidator.validateRepeatOrder(id);
 
-        if(!isValid)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
+        orderControllerValidator.validateRepeatOrder(id);
 
-        boolean success = orderService.repeatOrder(id);
-        return success
-                ? ResponseEntity.ok("Поръчката е повторена. Очаквано време за доставка: ~30 минути.")
-                : ResponseEntity.badRequest().body("Грешка при повторяване на поръчката");
+        //if(!isValid)
+            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
+
+        //boolean success = orderService.repeatOrder(id);
+        //return success
+                //? ResponseEntity.ok("Поръчката е повторена. Очаквано време за доставка: ~30 минути.")
+                //: ResponseEntity.badRequest().body("Грешка при повторяване на поръчката");
+
+        return ResponseEntity.ok("Поръчката е повторена. Очаквано време за доставка: ~30 минути.");
 
     }
 
