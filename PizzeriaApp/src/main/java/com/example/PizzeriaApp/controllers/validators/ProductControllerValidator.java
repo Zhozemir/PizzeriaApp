@@ -8,20 +8,19 @@ import java.math.BigDecimal;
 @Component
 public class ProductControllerValidator {
 
-    public boolean createProductValidator(ProductCreateRequest productCreateRequest){
+    public void createProductValidator(ProductCreateRequest productCreateRequest){
 
-        if(productCreateRequest == null || productCreateRequest.getName() == null || productCreateRequest.getName().isEmpty())
-            return false;
+        if(productCreateRequest == null || productCreateRequest.getName() == null || productCreateRequest.getName().isEmpty()
+                || productCreateRequest.getPrice() == null || productCreateRequest.getPrice().compareTo(BigDecimal.ZERO) <= 0)
+            throw new IllegalArgumentException(String.format("Invalid ProductCreate request [productCreateRequest: %s]",
+                    productCreateRequest));
 
-        if(productCreateRequest.getPrice() == null || productCreateRequest.getPrice().compareTo(BigDecimal.ZERO) <= 0)
-            return false;
-
-        return true;
     }
 
-    public boolean validateDeactivateProduct(Long id){
+    public void validateDeactivateProduct(Long id){
 
-        return id != null;
+        if(id == null)
+            throw  new IllegalArgumentException("Невалидни данни за деактивиране на продукта.");
 
     }
 
