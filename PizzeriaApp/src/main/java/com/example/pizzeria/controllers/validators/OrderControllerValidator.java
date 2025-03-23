@@ -1,7 +1,7 @@
-package com.example.PizzeriaApp.controllers.validators;
+package com.example.pizzeria.controllers.validators;
 
-import com.example.PizzeriaApp.controllers.requests.OrderCreateRequest;
-import com.example.PizzeriaApp.enumerators.OrderStatus;
+import com.example.pizzeria.controllers.requests.OrderCreateRequest;
+import com.example.pizzeria.enumerators.OrderStatus;
 import org.springframework.stereotype.Component;
 
 @Component

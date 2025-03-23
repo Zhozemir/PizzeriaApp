@@ -1,4 +1,4 @@
-package com.example.PizzeriaApp.console;
+package com.example.pizzeria.console;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

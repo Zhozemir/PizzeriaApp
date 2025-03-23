@@ -1,13 +1,12 @@
-package com.example.PizzeriaApp.controllers;
+package com.example.pizzeria.controllers;
 
-import com.example.PizzeriaApp.controllers.validators.AuthenticationControllerValidator;
-import com.example.PizzeriaApp.dto.UserDTO;
-import com.example.PizzeriaApp.controllers.requests.UserLoginRequest;
-import com.example.PizzeriaApp.controllers.requests.UserRegisterRequest;
-import com.example.PizzeriaApp.mappers.UserMapper;
-import com.example.PizzeriaApp.services.interfaces.UserService;
+import com.example.pizzeria.controllers.validators.AuthenticationControllerValidator;
+import com.example.pizzeria.dto.UserDTO;
+import com.example.pizzeria.controllers.requests.UserLoginRequest;
+import com.example.pizzeria.controllers.requests.UserRegisterRequest;
+import com.example.pizzeria.mappers.UserMapper;
+import com.example.pizzeria.services.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,24 +32,15 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UserRegisterRequest userRegisterRequest) {
 
-        //boolean isValid = authenticationControllerValidator.validateUserRegister(userRegisterRequest);
-
         authenticationControllerValidator.validateUserRegister(userRegisterRequest);
 
-        //if (!isValid)
-            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
-
-        boolean success = userService.registerUser(
+        userService.registerUser(
                 userRegisterRequest.getUsername(),
                 userRegisterRequest.getPassword(),
                 userRegisterRequest.getRole(),
                 userRegisterRequest.getName(),
                 userRegisterRequest.getPhone()
         );
-
-        //return success
-                //? ResponseEntity.ok("Регистрацията е успешна")
-                //: ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Потребител с това име вече съществува");
 
         return ResponseEntity.ok("Регистрацията е успешна.");
 
@@ -59,16 +49,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<UserDTO> login(@RequestBody UserLoginRequest userLoginRequest) {
 
-        //boolean isValid = authenticationControllerValidator.validateUserLogin(userLoginRequest);
-
         authenticationControllerValidator.validateUserLogin(userLoginRequest);
-
-        //if(!isValid) {
-
-            //return ResponseEntity.badRequest().build();
-            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни");
-
-        //}
 
         return userService.login(userLoginRequest.getUsername(), userLoginRequest.getPassword())
                 .map(user -> ResponseEntity.ok(userMapper.toDTO(user)))

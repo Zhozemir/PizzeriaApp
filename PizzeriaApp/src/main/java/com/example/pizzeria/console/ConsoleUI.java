@@ -1,13 +1,13 @@
-package com.example.PizzeriaApp.console;
+package com.example.pizzeria.console;
 
-import com.example.PizzeriaApp.console.validations.*;
-import com.example.PizzeriaApp.controllers.requests.OrderCreateRequest;
-import com.example.PizzeriaApp.controllers.requests.ProductCreateRequest;
-import com.example.PizzeriaApp.controllers.requests.UserLoginRequest;
-import com.example.PizzeriaApp.controllers.requests.UserRegisterRequest;
-import com.example.PizzeriaApp.dto.*;
-import com.example.PizzeriaApp.enumerators.UserRole;
-import com.example.PizzeriaApp.models.User;
+import com.example.pizzeria.console.validations.*;
+import com.example.pizzeria.controllers.requests.OrderCreateRequest;
+import com.example.pizzeria.controllers.requests.ProductCreateRequest;
+import com.example.pizzeria.controllers.requests.UserLoginRequest;
+import com.example.pizzeria.controllers.requests.UserRegisterRequest;
+import com.example.pizzeria.dto.*;
+import com.example.pizzeria.enumerators.UserRole;
+import com.example.pizzeria.models.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.client.RestTemplate;

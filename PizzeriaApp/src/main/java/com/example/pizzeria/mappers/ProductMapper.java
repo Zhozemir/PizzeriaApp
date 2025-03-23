@@ -1,7 +1,7 @@
-package com.example.PizzeriaApp.mappers;
+package com.example.pizzeria.mappers;
 
-import com.example.PizzeriaApp.dto.ProductDTO;
-import com.example.PizzeriaApp.models.Product;
+import com.example.pizzeria.dto.ProductDTO;
+import com.example.pizzeria.models.Product;
 import org.springframework.stereotype.Component;
 
 @Component

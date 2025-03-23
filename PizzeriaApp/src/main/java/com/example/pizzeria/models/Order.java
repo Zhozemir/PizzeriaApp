@@ -1,6 +1,6 @@
-package com.example.PizzeriaApp.models;
+package com.example.pizzeria.models;
 
-import com.example.PizzeriaApp.enumerators.OrderStatus;
+import com.example.pizzeria.enumerators.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
-package com.example.PizzeriaApp.controllers.validators;
+package com.example.pizzeria.controllers.validators;
 
-import com.example.PizzeriaApp.controllers.requests.UserLoginRequest;
-import com.example.PizzeriaApp.controllers.requests.UserRegisterRequest;
+import com.example.pizzeria.controllers.requests.UserLoginRequest;
+import com.example.pizzeria.controllers.requests.UserRegisterRequest;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.stereotype.Component;
 

@@ -1,7 +1,7 @@
-package com.example.PizzeriaApp.services.interfaces;
+package com.example.pizzeria.services.interfaces;
 
-import com.example.PizzeriaApp.enumerators.OrderStatus;
-import com.example.PizzeriaApp.models.Order;
+import com.example.pizzeria.enumerators.OrderStatus;
+import com.example.pizzeria.models.Order;
 
 import java.time.LocalDateTime;
 import java.util.List;

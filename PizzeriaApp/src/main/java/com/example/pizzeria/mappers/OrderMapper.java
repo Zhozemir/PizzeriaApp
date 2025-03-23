@@ -1,8 +1,8 @@
-package com.example.PizzeriaApp.mappers;
+package com.example.pizzeria.mappers;
 
-import com.example.PizzeriaApp.dto.OrderDTO;
-import com.example.PizzeriaApp.models.Order;
-import com.example.PizzeriaApp.models.Product;
+import com.example.pizzeria.dto.OrderDTO;
+import com.example.pizzeria.models.Order;
+import com.example.pizzeria.models.Product;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;

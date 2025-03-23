@@ -1,13 +1,13 @@
-package com.example.PizzeriaApp.services.impl;
+package com.example.pizzeria.services.impl;
 
-import com.example.PizzeriaApp.console.ConsoleSession;
-import com.example.PizzeriaApp.enumerators.OrderStatus;
-import com.example.PizzeriaApp.models.Order;
-import com.example.PizzeriaApp.models.Product;
-import com.example.PizzeriaApp.models.User;
-import com.example.PizzeriaApp.repositories.interfaces.OrderDAO;
-import com.example.PizzeriaApp.repositories.interfaces.ProductDAO;
-import com.example.PizzeriaApp.services.interfaces.OrderService;
+import com.example.pizzeria.console.ConsoleSession;
+import com.example.pizzeria.enumerators.OrderStatus;
+import com.example.pizzeria.models.Order;
+import com.example.pizzeria.models.Product;
+import com.example.pizzeria.models.User;
+import com.example.pizzeria.repositories.interfaces.OrderDAO;
+import com.example.pizzeria.repositories.interfaces.ProductDAO;
+import com.example.pizzeria.services.interfaces.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

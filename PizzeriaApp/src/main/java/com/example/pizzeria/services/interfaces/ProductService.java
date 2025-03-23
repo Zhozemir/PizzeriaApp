@@ -1,6 +1,6 @@
-package com.example.PizzeriaApp.services.interfaces;
+package com.example.pizzeria.services.interfaces;
 
-import com.example.PizzeriaApp.models.Product;
+import com.example.pizzeria.models.Product;
 
 import java.math.BigDecimal;
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.example.PizzeriaApp.console.validations;
+package com.example.pizzeria.console.validations;
 
-import com.example.PizzeriaApp.enumerators.UserRole;
+import com.example.pizzeria.enumerators.UserRole;
 
 import java.util.Scanner;
 

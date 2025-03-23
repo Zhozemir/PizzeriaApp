@@ -1,8 +1,8 @@
-package com.example.PizzeriaApp.printing;
+package com.example.pizzeria.printing;
 
-import com.example.PizzeriaApp.models.Order;
+import com.example.pizzeria.models.Order;
 import de.vandermeer.asciitable.AsciiTable;
-import com.example.PizzeriaApp.models.Product;
+import com.example.pizzeria.models.Product;
 import java.util.List;
 import java.util.stream.Collectors;
 

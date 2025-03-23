@@ -1,8 +1,8 @@
-package com.example.PizzeriaApp.repositories.interfaces;
+package com.example.pizzeria.repositories.interfaces;
 
-import com.example.PizzeriaApp.enumerators.OrderStatus;
-import com.example.PizzeriaApp.models.Order;
-import com.example.PizzeriaApp.models.User;
+import com.example.pizzeria.enumerators.OrderStatus;
+import com.example.pizzeria.models.Order;
+import com.example.pizzeria.models.User;
 
 import java.sql.Connection;
 import java.time.LocalDateTime;

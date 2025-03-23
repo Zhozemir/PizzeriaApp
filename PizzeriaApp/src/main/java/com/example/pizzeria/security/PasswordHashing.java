@@ -1,4 +1,4 @@
-package com.example.PizzeriaApp.security;
+package com.example.pizzeria.security;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

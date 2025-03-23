@@ -1,15 +1,14 @@
-package com.example.PizzeriaApp.controllers;
+package com.example.pizzeria.controllers;
 
-import com.example.PizzeriaApp.controllers.validators.OrderControllerValidator;
-import com.example.PizzeriaApp.controllers.requests.OrderCreateRequest;
-import com.example.PizzeriaApp.dto.OrderDTO;
-import com.example.PizzeriaApp.enumerators.OrderStatus;
-import com.example.PizzeriaApp.mappers.OrderMapper;
-import com.example.PizzeriaApp.models.Order;
-import com.example.PizzeriaApp.printing.OrderPrinter;
-import com.example.PizzeriaApp.services.interfaces.OrderService;
+import com.example.pizzeria.controllers.validators.OrderControllerValidator;
+import com.example.pizzeria.controllers.requests.OrderCreateRequest;
+import com.example.pizzeria.dto.OrderDTO;
+import com.example.pizzeria.enumerators.OrderStatus;
+import com.example.pizzeria.mappers.OrderMapper;
+import com.example.pizzeria.models.Order;
+import com.example.pizzeria.printing.OrderPrinter;
+import com.example.pizzeria.services.interfaces.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,17 +35,9 @@ public class OrderController {
     @PostMapping("/create")
     public ResponseEntity<String> createOrder(@RequestBody OrderCreateRequest orderCreateRequest) {
 
-        //boolean isValid = orderControllerValidator.validateCreateOrder(orderCreateRequest);
-
         orderControllerValidator.validateCreateOrder(orderCreateRequest);
 
-        //if(!isValid)
-           // return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
-
-        //boolean success = orderService.createOrder(orderCreateRequest.getProductIds());
-        //return success
-                //? ResponseEntity.ok("Поръчката е създадена. Очаквано време за доставка: ~30 минути.")
-                //: ResponseEntity.badRequest().body("Грешка при създаването на поръчката");
+        orderService.createOrder(orderCreateRequest.getProductIds());
 
         return ResponseEntity.ok("Поръчката е създадена. Очаквано време за доставка: ~30 минути.");
 
@@ -102,17 +93,9 @@ public class OrderController {
     @PutMapping("/{id}/status")
     public ResponseEntity<String> updateOrderStatus(@PathVariable Long id, @RequestParam OrderStatus status) {
 
-        //boolean isValid = orderControllerValidator.validateUpdateOrderStatus(id, status);
-
         orderControllerValidator.validateUpdateOrderStatus(id, status);
 
-        //if(!isValid)
-            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
-
-        //boolean success = orderService.updateOrderStatus(id, status);
-        //return success
-                //? ResponseEntity.ok("Статусът на поръчката е обновен")
-                //: ResponseEntity.badRequest().body("Грешка при обновяването на статуса");
+        orderService.updateOrderStatus(id, status);
 
         return ResponseEntity.ok("Статусът на поръчката е обновен.");
 
@@ -141,17 +124,9 @@ public class OrderController {
     @PostMapping("/{id}/repeat")
     public ResponseEntity<String> repeatOrder(@PathVariable Long id) {
 
-        //boolean isValid = orderControllerValidator.validateRepeatOrder(id);
-
         orderControllerValidator.validateRepeatOrder(id);
 
-        //if(!isValid)
-            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Грешни данни.");
-
-        //boolean success = orderService.repeatOrder(id);
-        //return success
-                //? ResponseEntity.ok("Поръчката е повторена. Очаквано време за доставка: ~30 минути.")
-                //: ResponseEntity.badRequest().body("Грешка при повторяване на поръчката");
+        orderService.repeatOrder(id);
 
         return ResponseEntity.ok("Поръчката е повторена. Очаквано време за доставка: ~30 минути.");
 

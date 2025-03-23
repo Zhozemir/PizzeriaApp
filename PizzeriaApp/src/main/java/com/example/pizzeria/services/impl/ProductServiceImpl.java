@@ -1,8 +1,8 @@
-package com.example.PizzeriaApp.services.impl;
+package com.example.pizzeria.services.impl;
 
-import com.example.PizzeriaApp.models.Product;
-import com.example.PizzeriaApp.repositories.interfaces.ProductDAO;
-import com.example.PizzeriaApp.services.interfaces.ProductService;
+import com.example.pizzeria.models.Product;
+import com.example.pizzeria.repositories.interfaces.ProductDAO;
+import com.example.pizzeria.services.interfaces.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

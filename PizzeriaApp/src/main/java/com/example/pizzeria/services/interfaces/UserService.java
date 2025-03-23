@@ -1,7 +1,7 @@
-package com.example.PizzeriaApp.services.interfaces;
+package com.example.pizzeria.services.interfaces;
 
-import com.example.PizzeriaApp.enumerators.UserRole;
-import com.example.PizzeriaApp.models.User;
+import com.example.pizzeria.enumerators.UserRole;
+import com.example.pizzeria.models.User;
 
 import java.util.Optional;
 

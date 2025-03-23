@@ -1,4 +1,4 @@
-package com.example.PizzeriaApp.database;
+package com.example.pizzeria.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

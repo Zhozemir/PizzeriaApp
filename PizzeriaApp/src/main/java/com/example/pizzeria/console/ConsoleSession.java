@@ -1,7 +1,7 @@
-package com.example.PizzeriaApp.console;
+package com.example.pizzeria.console;
 
-import com.example.PizzeriaApp.enumerators.UserRole;
-import com.example.PizzeriaApp.models.User;
+import com.example.pizzeria.enumerators.UserRole;
+import com.example.pizzeria.models.User;
 
 public class ConsoleSession {
 

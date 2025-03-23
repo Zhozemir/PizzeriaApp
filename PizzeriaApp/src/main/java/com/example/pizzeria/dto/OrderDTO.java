@@ -1,4 +1,4 @@
-package com.example.PizzeriaApp.dto;
+package com.example.pizzeria.dto;
 
 import java.util.List;
 
