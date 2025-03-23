@@ -1,5 +1,6 @@
 package com.example.pizzeria.controllers;
 
+import com.example.pizzeria.controllers.requests.UserLoginRequest;
 import com.example.pizzeria.controllers.requests.UserRegisterRequest;
 import com.example.pizzeria.enumerators.UserRole;
 import com.example.pizzeria.services.interfaces.UserService;
@@ -54,6 +55,33 @@ public class AuthenticationControllerTest {
                         .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Регистрацията е успешна."));
+    }
+
+    @Test
+    void testLoginWithValidationFailure() throws Exception {
+
+        UserLoginRequest request = new UserLoginRequest("", "");
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Грешни данни."));
+
+    }
+
+    @Test
+    void testLoginWithValidationSuccess() throws Exception{
+
+        userService.registerUser("user", "pass", UserRole.CUSTOMER, "John Doe", "123456");
+
+        UserLoginRequest request = new UserLoginRequest("user", "pass");
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isOk());
+
     }
 
 }
