@@ -1,8 +1,8 @@
-package com.example.PizzeriaApp.repositories.impl;
+package com.example.pizzeria.repositories.impl;
 
-import com.example.PizzeriaApp.database.Database;
-import com.example.PizzeriaApp.models.Product;
-import com.example.PizzeriaApp.repositories.interfaces.ProductDAO;
+import com.example.pizzeria.database.Database;
+import com.example.pizzeria.models.Product;
+import com.example.pizzeria.repositories.interfaces.ProductDAO;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;

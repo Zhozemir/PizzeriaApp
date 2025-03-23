@@ -1,6 +1,6 @@
-package com.example.PizzeriaApp.models;
+package com.example.pizzeria.models;
 
-import com.example.PizzeriaApp.enumerators.UserRole;
+import com.example.pizzeria.enumerators.UserRole;
 
 public class User {
 

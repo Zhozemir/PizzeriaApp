@@ -1,11 +1,11 @@
-package com.example.PizzeriaApp.services.impl;
+package com.example.pizzeria.services.impl;
 
-import com.example.PizzeriaApp.domain.exceptions.UserAlreadyExistsException;
-import com.example.PizzeriaApp.enumerators.UserRole;
-import com.example.PizzeriaApp.models.User;
-import com.example.PizzeriaApp.repositories.interfaces.UserDAO;
-import com.example.PizzeriaApp.security.PasswordHashing;
-import com.example.PizzeriaApp.services.interfaces.UserService;
+import com.example.pizzeria.domain.exceptions.UserAlreadyExistsException;
+import com.example.pizzeria.enumerators.UserRole;
+import com.example.pizzeria.models.User;
+import com.example.pizzeria.repositories.interfaces.UserDAO;
+import com.example.pizzeria.security.PasswordHashing;
+import com.example.pizzeria.services.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

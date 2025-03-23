@@ -1,6 +1,6 @@
-package com.example.PizzeriaApp.dto;
+package com.example.pizzeria.dto;
 
-import com.example.PizzeriaApp.enumerators.UserRole;
+import com.example.pizzeria.enumerators.UserRole;
 
 public class UserDTO {
     private Long id;

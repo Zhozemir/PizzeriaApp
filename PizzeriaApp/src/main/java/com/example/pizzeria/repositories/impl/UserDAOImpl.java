@@ -1,9 +1,9 @@
-package com.example.PizzeriaApp.repositories.impl;
+package com.example.pizzeria.repositories.impl;
 
-import com.example.PizzeriaApp.database.Database;
-import com.example.PizzeriaApp.enumerators.UserRole;
-import com.example.PizzeriaApp.models.User;
-import com.example.PizzeriaApp.repositories.interfaces.UserDAO;
+import com.example.pizzeria.database.Database;
+import com.example.pizzeria.enumerators.UserRole;
+import com.example.pizzeria.models.User;
+import com.example.pizzeria.repositories.interfaces.UserDAO;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;

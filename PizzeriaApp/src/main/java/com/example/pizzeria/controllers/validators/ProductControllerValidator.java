@@ -1,6 +1,6 @@
-package com.example.PizzeriaApp.controllers.validators;
+package com.example.pizzeria.controllers.validators;
 
-import com.example.PizzeriaApp.controllers.requests.ProductCreateRequest;
+import com.example.pizzeria.controllers.requests.ProductCreateRequest;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

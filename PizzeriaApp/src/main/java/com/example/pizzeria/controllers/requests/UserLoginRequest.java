@@ -1,4 +1,4 @@
-package com.example.PizzeriaApp.controllers.requests;
+package com.example.pizzeria.controllers.requests;
 
 public class UserLoginRequest {
 

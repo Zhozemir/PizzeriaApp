@@ -1,7 +1,6 @@
-package com.example.PizzeriaApp.controllers.exceptionhandlers;
+package com.example.pizzeria.controllers.exceptionhandlers;
 
-import com.example.PizzeriaApp.controllers.AuthenticationController;
-import com.example.PizzeriaApp.controllers.OrderController;
+import com.example.pizzeria.controllers.OrderController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

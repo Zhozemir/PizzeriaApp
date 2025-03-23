@@ -1,4 +1,4 @@
-package com.example.PizzeriaApp.console.validations;
+package com.example.pizzeria.console.validations;
 
 import java.util.Scanner;
 

@@ -1,6 +1,6 @@
-package com.example.PizzeriaApp.controllers.requests;
+package com.example.pizzeria.controllers.requests;
 
-import com.example.PizzeriaApp.enumerators.UserRole;
+import com.example.pizzeria.enumerators.UserRole;
 
 public class UserRegisterRequest {
 

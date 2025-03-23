@@ -1,4 +1,4 @@
-package com.example.PizzeriaApp.console.validations;
+package com.example.pizzeria.console.validations;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

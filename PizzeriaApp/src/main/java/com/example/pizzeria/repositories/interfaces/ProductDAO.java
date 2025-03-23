@@ -1,6 +1,6 @@
-package com.example.PizzeriaApp.repositories.interfaces;
+package com.example.pizzeria.repositories.interfaces;
 
-import com.example.PizzeriaApp.models.Product;
+import com.example.pizzeria.models.Product;
 
 import java.util.List;
 import java.util.Optional;

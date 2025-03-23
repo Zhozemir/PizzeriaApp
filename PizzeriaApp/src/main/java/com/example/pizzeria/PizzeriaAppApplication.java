@@ -1,6 +1,6 @@
-package com.example.PizzeriaApp;
+package com.example.pizzeria;
 
-import com.example.PizzeriaApp.console.ConsoleUI;
+import com.example.pizzeria.console.ConsoleUI;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

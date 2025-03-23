@@ -1,4 +1,4 @@
-package com.example.PizzeriaApp.models;
+package com.example.pizzeria.models;
 
 import java.math.BigDecimal;
 
