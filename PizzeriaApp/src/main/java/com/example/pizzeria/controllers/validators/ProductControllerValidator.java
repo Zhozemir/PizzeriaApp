@@ -9,8 +9,6 @@ import java.math.BigDecimal;
 @Component
 public class ProductControllerValidator {
 
-    ProductServiceImpl productService;
-
     public void createProductValidator(ProductCreateRequest productCreateRequest){
 
         if(productCreateRequest == null || productCreateRequest.getName() == null || productCreateRequest.getName().isEmpty()
