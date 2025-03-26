@@ -29,7 +29,6 @@ public class OrderControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    //@Autowired
     @Mock
     private OrderService orderService;
 

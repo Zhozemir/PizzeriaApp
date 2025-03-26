@@ -65,9 +65,9 @@ public class ProductControllerTest {
     @Test
     void testDeactivateProductWithInvalidData() throws Exception{
 
-        mockMvc.perform(put("/api/products/{id}/deactivate", 99))
+        mockMvc.perform(put("/api/products/{id}/deactivate", -1))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Обща грешка."));
+                .andExpect(content().string("Невалидни данни."));
 
     }
 
