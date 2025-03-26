@@ -24,7 +24,7 @@ public class OrderControllerValidator {
 
     public void validateRepeatOrder(Long id){
 
-        if(id == null)
+        if(id == null || id <= 0)
             throw new IllegalArgumentException("Невалидни данни за повтрорение на поръчката.");
 
     }

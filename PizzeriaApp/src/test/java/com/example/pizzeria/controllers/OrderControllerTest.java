@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -51,7 +52,9 @@ public class OrderControllerTest {
     @Test
     void testCreateOrderSuccess() throws Exception{
 
-        OrderCreateRequest request = new OrderCreateRequest(new ArrayList<>());
+        OrderCreateRequest request = new OrderCreateRequest(List.of(1L, 2L));
+
+        //OrderCreateRequest request = new OrderCreateRequest(new ArrayList<>());
 
         mockMvc.perform(post("/api/orders/create")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -84,9 +87,9 @@ public class OrderControllerTest {
     @Test
     void testRepeatOrderWithInvalidData() throws Exception{
 
-        mockMvc.perform(post("/api/orders/{id}/repeat", 99))
+        mockMvc.perform(post("/api/orders/{id}/repeat", -1))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Обща грешка."));
+                .andExpect(content().string("Невалидни данни."));
 
     }
 

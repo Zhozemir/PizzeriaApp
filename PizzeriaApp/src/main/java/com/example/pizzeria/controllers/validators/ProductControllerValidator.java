@@ -20,7 +20,7 @@ public class ProductControllerValidator {
 
     public void validateDeactivateProduct(Long id){
 
-        if(id == null || id < 0)
+        if(id == null || id <= 0)
             throw  new IllegalArgumentException("Невалидни данни за деактивиране на продукта.");
 
     }
