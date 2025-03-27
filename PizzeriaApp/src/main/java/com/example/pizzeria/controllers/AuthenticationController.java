@@ -57,7 +57,6 @@ public class AuthenticationController {
 
     }
 
-
     @GetMapping("/check/username")
     public ResponseEntity<String> checkUsername(@RequestParam String username) {
 
@@ -66,4 +65,5 @@ public class AuthenticationController {
                 : ResponseEntity.ok("not exists");
 
     }
+
 }

@@ -11,7 +11,7 @@ public class OrderControllerExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Невалидни данни за поръчка.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Невалидни данни.");
     }
 
     @ExceptionHandler(Exception.class)

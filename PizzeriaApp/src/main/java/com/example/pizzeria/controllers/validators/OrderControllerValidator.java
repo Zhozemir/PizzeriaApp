@@ -20,14 +20,11 @@ public class OrderControllerValidator {
         if(id == null || status == null || !( (status.toString().toUpperCase().equals("IN_PROGRESS")) || (status.toString().toUpperCase().equals("DELIVERED")) || (status.toString().toUpperCase().equals("CANCELLED")) ) )
              throw new IllegalArgumentException("Грешни данни за обновяване на статус.");
 
-
-        // да направя updateOrderRequest... и може би вс останали
-
     }
 
     public void validateRepeatOrder(Long id){
 
-        if(id == null)
+        if(id == null || id <= 0)
             throw new IllegalArgumentException("Невалидни данни за повтрорение на поръчката.");
 
     }

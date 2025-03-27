@@ -1,5 +1,6 @@
 package com.example.pizzeria.controllers;
 
+import com.example.pizzeria.controllers.requests.UserLoginRequest;
 import com.example.pizzeria.controllers.requests.UserRegisterRequest;
 import com.example.pizzeria.enumerators.UserRole;
 import com.example.pizzeria.services.interfaces.UserService;
@@ -13,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -27,7 +31,8 @@ public class AuthenticationControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Mock
+    //@Mock
+    @Autowired
     private UserService userService;
 
     @InjectMocks
@@ -47,7 +52,7 @@ public class AuthenticationControllerTest {
 
     @Test
     void testRegisterWithValidationSuccess() throws Exception {
-        UserRegisterRequest request = new UserRegisterRequest("user", "pass", UserRole.CUSTOMER, "John Doe", "123456");
+        UserRegisterRequest request = new UserRegisterRequest("pass", "user", UserRole.CUSTOMER, "John Doe", "123456");
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -56,4 +61,32 @@ public class AuthenticationControllerTest {
                 .andExpect(content().string("Регистрацията е успешна."));
     }
 
+    @Test
+    void testLoginWithValidationFailure() throws Exception {
+
+        UserLoginRequest request = new UserLoginRequest("", "");
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Грешни данни."));
+
+    }
+
+    @Test
+    void testLoginWithValidationSuccess() throws Exception{
+
+        userService.registerUser("user", "pass", UserRole.CUSTOMER, "John Doe", "123456");
+
+        UserLoginRequest request = new UserLoginRequest("user", "pass");
+
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isOk());
+
+    }
+
 }
+

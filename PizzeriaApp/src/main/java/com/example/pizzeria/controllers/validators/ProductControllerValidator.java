@@ -1,6 +1,7 @@
 package com.example.pizzeria.controllers.validators;
 
 import com.example.pizzeria.controllers.requests.ProductCreateRequest;
+import com.example.pizzeria.services.impl.ProductServiceImpl;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -19,9 +20,11 @@ public class ProductControllerValidator {
 
     public void validateDeactivateProduct(Long id){
 
-        if(id == null)
+        if(id == null || id <= 0)
             throw  new IllegalArgumentException("Невалидни данни за деактивиране на продукта.");
 
     }
 
 }
+
+
