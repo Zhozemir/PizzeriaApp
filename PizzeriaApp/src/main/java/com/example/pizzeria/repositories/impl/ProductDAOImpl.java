@@ -3,8 +3,10 @@ package com.example.pizzeria.repositories.impl;
 import com.example.pizzeria.database.Database;
 import com.example.pizzeria.models.Product;
 import com.example.pizzeria.repositories.interfaces.ProductDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +15,19 @@ import java.util.Optional;
 @Repository
 public class ProductDAOImpl implements ProductDAO {
 
+    private final DataSource dataSource;
+
+    @Autowired
+    public ProductDAOImpl(DataSource dataSource){
+        this.dataSource = dataSource;
+    }
+
     @Override
     public boolean save(Product product) {
 
         String sql = "INSERT INTO products (name, price, is_active) VALUES (?, ?, ?)";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, product.getName());
@@ -43,7 +52,7 @@ public class ProductDAOImpl implements ProductDAO {
     public Optional<Product> findById(Long id) {
 
         String sql = "SELECT * FROM products WHERE id = ?";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
 
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -74,7 +83,7 @@ public class ProductDAOImpl implements ProductDAO {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM products WHERE is_active = true";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement();
 
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -101,7 +110,7 @@ public class ProductDAOImpl implements ProductDAO {
 
         String sql = "UPDATE products SET name = ?, price = ?, is_active = ? WHERE id = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, product.getName());

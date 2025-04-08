@@ -4,20 +4,29 @@ import com.example.pizzeria.database.Database;
 import com.example.pizzeria.enumerators.UserRole;
 import com.example.pizzeria.models.User;
 import com.example.pizzeria.repositories.interfaces.UserDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.Optional;
 
 @Repository
 public class UserDAOImpl implements UserDAO {
 
+    private final DataSource dataSource;
+
+    @Autowired
+    public UserDAOImpl(DataSource dataSource){
+        this.dataSource = dataSource;
+    }
+
     @Override
     public Optional<User> findByUsername(String username) {
 
         String sql = "SELECT * FROM users WHERE username = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, username);
@@ -47,7 +56,7 @@ public class UserDAOImpl implements UserDAO {
     public boolean save(User user) {
 
         String sql = "INSERT INTO users (username, password, role, name, phone) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
 
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
