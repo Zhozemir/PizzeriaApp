@@ -1,31 +1,49 @@
 package com.example.pizzeria.database;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@Component
 public class Database {
-    //private static final String URL = "jdbc:h2:~/test;AUTO_SERVER=TRUE";
-    private static final String URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE";
+//    //private static final String URL = "jdbc:h2:~/test;AUTO_SERVER=TRUE";
+//    private static final String URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE";
+//
+//    // "sa" == system administrator
+//    private static final String USER = "sa";
+//    private static final String PASSWORD = "";
+//
+//    static {
+//        try {
+//            Class.forName("org.h2.Driver");
+//            initializeDatabase();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-    // "sa" == system administrator
-    private static final String USER = "sa";
-    private static final String PASSWORD = "";
+//    public static Connection getConnection() throws SQLException {
+//        return DriverManager.getConnection(URL, USER, PASSWORD);
+//    }
 
-    static {
-        try {
-            Class.forName("org.h2.Driver");
-            initializeDatabase();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    private final DataSource dataSource;
+
+    @Autowired
+    public Database (DataSource dataSource){
+        this.dataSource = dataSource;
     }
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+    public Connection getConnection() throws SQLException{
+        return dataSource.getConnection();
     }
 
-    private static void initializeDatabase() {
+    @PostConstruct
+    private void initializeDatabase() {
 
         //try-with-resources:
         //Това е конструкция, която гарантира, че всички ресурси, които отворим

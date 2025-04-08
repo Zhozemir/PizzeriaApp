@@ -7,8 +7,10 @@ import com.example.pizzeria.models.Order;
 import com.example.pizzeria.models.Product;
 import com.example.pizzeria.models.User;
 import com.example.pizzeria.repositories.interfaces.OrderDAO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,12 +20,19 @@ import java.util.Optional;
 @Repository
 public class OrderDAOImpl implements OrderDAO {
 
+    private final DataSource dataSource;
+
+    @Autowired
+    public OrderDAOImpl(DataSource dataSource){
+        this.dataSource = dataSource;
+    }
+
     @Override
     public boolean save(Order order) {
 
         String sql = "INSERT INTO orders (user_id, status, created_on) VALUES (?, ?, ?)";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             if (order.getUser() == null || order.getUser().getId() == null)
@@ -78,7 +87,7 @@ public class OrderDAOImpl implements OrderDAO {
 
         String sql = "SELECT * FROM orders WHERE id = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, id);
@@ -144,7 +153,7 @@ public class OrderDAOImpl implements OrderDAO {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE status = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, status.name());
@@ -173,7 +182,7 @@ public class OrderDAOImpl implements OrderDAO {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE user_id = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, id);
@@ -237,7 +246,7 @@ public class OrderDAOImpl implements OrderDAO {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -262,7 +271,7 @@ public class OrderDAOImpl implements OrderDAO {
 
         String sql = "UPDATE orders SET status = ? WHERE id = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, newStatus.name());
@@ -282,7 +291,7 @@ public class OrderDAOImpl implements OrderDAO {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE created_on BETWEEN ? AND ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setTimestamp(1, Timestamp.valueOf(start));
