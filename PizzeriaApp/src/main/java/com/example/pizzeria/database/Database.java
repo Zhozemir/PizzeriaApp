@@ -11,25 +11,6 @@ import java.sql.SQLException;
 
 @Component
 public class Database {
-//    //private static final String URL = "jdbc:h2:~/test;AUTO_SERVER=TRUE";
-//    private static final String URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE";
-//
-//    // "sa" == system administrator
-//    private static final String USER = "sa";
-//    private static final String PASSWORD = "";
-//
-//    static {
-//        try {
-//            Class.forName("org.h2.Driver");
-//            initializeDatabase();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-//    public static Connection getConnection() throws SQLException {
-//        return DriverManager.getConnection(URL, USER, PASSWORD);
-//    }
 
     private final DataSource dataSource;
 
