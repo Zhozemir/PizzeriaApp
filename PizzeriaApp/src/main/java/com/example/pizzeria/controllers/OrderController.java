@@ -77,7 +77,6 @@ public class OrderController {
         return OrderPrinter.getPrintedOrders(orders);
     }
 
-
     @GetMapping("/delivered/print")
     public String printDeliveredOrders(){
 
@@ -87,6 +86,23 @@ public class OrderController {
             return "Няма завършени поръчки";
 
         return OrderPrinter.getPrintedOrders(deliveredOrders);
+
+    }
+
+    // only current customer delivered orders
+    @GetMapping("my/delivered/print")
+    public String printMyDeliveredOrders(){
+
+        List<Order> myOrders = orderService.getOrdersByUser();
+
+        List<Order> delivered = myOrders.stream()
+                .filter(o -> o.getStatus() == OrderStatus.DELIVERED)
+                .toList();
+
+        if(delivered.isEmpty())
+            return "Няма завършени поръчки за повторение.";
+
+        return OrderPrinter.getPrintedOrders(delivered);
 
     }
 

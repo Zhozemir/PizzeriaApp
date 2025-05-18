@@ -52,7 +52,7 @@ public class AuthenticationControllerTest {
 
     @Test
     void testRegisterWithValidationSuccess() throws Exception {
-        UserRegisterRequest request = new UserRegisterRequest("pass", "user", UserRole.CUSTOMER, "John Doe", "123456");
+        UserRegisterRequest request = new UserRegisterRequest("user1", "pass", UserRole.CUSTOMER, "John Doe", "123456");
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -89,4 +89,3 @@ public class AuthenticationControllerTest {
     }
 
 }
-
