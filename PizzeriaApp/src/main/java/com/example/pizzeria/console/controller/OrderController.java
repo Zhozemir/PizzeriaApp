@@ -38,6 +38,27 @@ public class OrderController {
         return mapper.readValue(resp, new TypeReference<List<OrderDTO>>() {});
     }
 
+    public List<OrderDTO> listMyJson() throws Exception{
+
+        var user = ConsoleSession.getCurrentUser();
+        if (user == null || user.getId() == null) {
+            return List.of();
+        }
+
+        try {
+
+            String json = ConsoleService.get("/orders/my/json?userId=" + user.getId());
+            return mapper.readValue(json, new TypeReference<>() {});
+
+        } catch (Exception e) {
+
+            System.err.println("NotificationService: не може да зареди моите поръчки: " + e.getMessage());
+            return List.of();
+
+        }
+
+    }
+
     public List<OrderDTO> listDelivered() {
 
         String resp = ConsoleService.get("/orders/delivered/print");

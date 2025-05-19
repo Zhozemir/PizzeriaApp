@@ -7,13 +7,19 @@ import com.example.pizzeria.models.Product;
 import com.example.pizzeria.models.User;
 import com.example.pizzeria.repositories.interfaces.OrderDAO;
 import com.example.pizzeria.repositories.interfaces.ProductDAO;
+import com.example.pizzeria.services.DelayedOrder;
 import com.example.pizzeria.services.interfaces.OrderService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 // бизнес логика, обработват се заявки
@@ -23,6 +29,10 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDAO orderDAO;
     private final ProductDAO productDAO;
 
+    private DelayQueue<DelayedOrder> queue = new DelayQueue<>();
+    private final ExecutorService workers = Executors.newFixedThreadPool(3);
+    private final Object dbLock = new Object();
+
     @Autowired
     public OrderServiceImpl(OrderDAO orderDAO, ProductDAO productDAO){
 
@@ -31,18 +41,36 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+    @PostConstruct
+    public void initProcessing(){
+
+        for(int i = 0; i < 3; i++){
+
+            workers.submit(()->{
+                while(!Thread.currentThread().isInterrupted()){
+
+                    try{
+
+                        DelayedOrder delayed = queue.take();
+                        //Order o  = delayed.getOrder();
+                        Long id = delayed.getOrderId();
+                        synchronized (dbLock){
+                            //o.setStatus(OrderStatus.DELIVERED);
+                            //orderDAO.save(o);
+                            orderDAO.updateStatus(id, OrderStatus.DELIVERED);
+                        }
+                    } catch (InterruptedException e){
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            });
+
+        }
+
+    }
+
     @Override
     public boolean createOrder(List<Long> productIds) {
-
-//        Order order = new Order();
-//        for(Long id : productIds) {
-//
-//            Optional<Product> productOpt = productDAO.findById(id);
-//            productOpt.ifPresent(order::addProduct);
-//
-//        }
-//
-//        return orderDAO.save(order);
 
         User currentUser = ConsoleSession.getCurrentUser();
 
@@ -64,9 +92,16 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = new Order();
         order.setUser(currentUser);
+        order.setStatus(OrderStatus.IN_PROGRESS);
         products.forEach(order::addProduct);
 
-        return orderDAO.save(order);
+        synchronized (dbLock) {
+            orderDAO.save(order);
+        }
+
+        Long id = order.getId();
+        queue.put(new DelayedOrder(id, 30, TimeUnit.SECONDS));
+        return true;
 
     }
 
@@ -86,6 +121,11 @@ public class OrderServiceImpl implements OrderService {
         User currentUser = ConsoleSession.getCurrentUser();
         return orderDAO.findByUserId(currentUser.getId());
 
+    }
+
+    @Override
+    public List<Order> getOrdersByUserId(Long userId){
+        return orderDAO.findByUserId(userId);
     }
 
     @Override
@@ -120,7 +160,9 @@ public class OrderServiceImpl implements OrderService {
             newOrder.setUser(original.getUser());
             original.getProducts().forEach(newOrder::addProduct);
 
-            return orderDAO.save(newOrder);
+            synchronized (dbLock) {
+                return orderDAO.save(newOrder);
+            }
 
         }
 
