@@ -16,4 +16,6 @@ public interface OrderService {
     boolean repeatOrder(Long orderId);
 
     List<Order> getOrdersByUser();
+
+    List<Order> getOrdersByUserId(Long userId);
 }

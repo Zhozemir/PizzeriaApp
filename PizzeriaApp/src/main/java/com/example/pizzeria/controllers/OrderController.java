@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -75,6 +76,17 @@ public class OrderController {
             return "Няма поръчки";
 
         return OrderPrinter.getPrintedOrders(orders);
+    }
+
+    @GetMapping("/my/json")
+    public ResponseEntity<List<OrderDTO>> getMyOrdersJson(@RequestParam("userId") Long userId) {
+
+        List<OrderDTO> dtos = orderService.getOrdersByUserId(userId)
+                .stream()
+                .map(orderMapper::toDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/delivered/print")
