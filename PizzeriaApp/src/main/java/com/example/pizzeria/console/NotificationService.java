@@ -6,6 +6,7 @@ import com.example.pizzeria.enumerators.OrderStatus;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class NotificationService {
@@ -32,7 +33,15 @@ public class NotificationService {
                         continue;
                     }
 
+//                    Optional<List<OrderDTO>> result = orderCtrl.listMyJson();
+//
+//                    if (result.isEmpty()) {
+//                        System.err.println("Неуспешно зареждане на поръчките за текущия потребител.");
+//                        continue;
+//                    }
+
                     List<OrderDTO> orders = orderCtrl.listMyJson();
+                    //List<OrderDTO> orders = orderCtrl.listMyJson();
                     Set<Long> delivered = new HashSet<>();
 
                    for(OrderDTO o : orders){
@@ -55,6 +64,7 @@ public class NotificationService {
                 } catch (InterruptedException e){
                     Thread.currentThread().interrupt();
                 } catch (Exception ex){
+                    System.out.println("Грешка при NotificationsService: " + ex.getMessage());
                     ex.printStackTrace();
                 }
 

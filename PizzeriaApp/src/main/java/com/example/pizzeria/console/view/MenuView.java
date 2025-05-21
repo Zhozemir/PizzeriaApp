@@ -19,21 +19,61 @@ public class MenuView {
 
     }
 
-    public void render() {
+    private void displayMenu() {
 
-        System.out.printf("\n--- %s ---\n", title);
+        System.out.printf("%n--- %s ---%n", title);
+
         for (int i = 0; i < items.size(); i++) {
             System.out.printf("%d. %s%n", i + 1, items.get(i).text());
         }
 
+    }
+
+    private int readUserChoice() {
+
         int choice = ChoiceValidation.readChoice("Избор: ");
 
         if (choice < 1 || choice > items.size()) {
+
             System.out.println("Невалиден избор.");
-            return;
+            return -1;
+
         }
 
+        return choice;
+    }
+
+    private void executeChoice(int choice) {
+
+        if (choice == -1)
+            return;
+
         items.get(choice - 1).execute();
+    }
+
+    public void handleMenuInteraction() {
+
+        displayMenu();
+        int choice = readUserChoice();
+        executeChoice(choice);
 
     }
+
+//    public void render() {
+//
+//        System.out.printf("\n--- %s ---\n", title);
+//        for (int i = 0; i < items.size(); i++) {
+//            System.out.printf("%d. %s%n", i + 1, items.get(i).text());
+//        }
+//
+//        int choice = ChoiceValidation.readChoice("Избор: ");
+//
+//        if (choice < 1 || choice > items.size()) {
+//            System.out.println("Невалиден избор.");
+//            return;
+//        }
+//
+//        items.get(choice - 1).execute();
+//
+//    }
 }

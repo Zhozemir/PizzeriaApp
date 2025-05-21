@@ -1,78 +1,82 @@
 package com.example.pizzeria.console.controller;
 
-import com.example.pizzeria.console.ConsoleService;
 import com.example.pizzeria.console.ConsoleSession;
-import com.example.pizzeria.console.validations.NameValidation;
-import com.example.pizzeria.console.validations.PasswordValidation;
-import com.example.pizzeria.console.validations.PhoneValidation;
-import com.example.pizzeria.console.validations.RoleValidation;
+import com.example.pizzeria.console.http.ApiResponse;
+import com.example.pizzeria.console.http.ErrorResponse;
+import com.example.pizzeria.console.http.HttpClientService;
+import com.example.pizzeria.console.model.LoginResult;
+import com.example.pizzeria.console.model.RegisterResult;
+import com.example.pizzeria.console.utils.ErrorResponseUtil;
 import com.example.pizzeria.controllers.requests.UserLoginRequest;
 import com.example.pizzeria.controllers.requests.UserRegisterRequest;
 import com.example.pizzeria.dto.UserDTO;
-import com.example.pizzeria.enumerators.UserRole;
 import com.example.pizzeria.models.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.Scanner;
-
 public class AuthController {
 
+    private final HttpClientService httpClientService;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public void login(Scanner scanner) {
+    public AuthController(HttpClientService httpClientService) {
+        this.httpClientService = httpClientService;
+    }
+
+    public LoginResult login(String username, String password) {
 
         try {
 
-            System.out.print("Потребителско име: ");
-            String username = scanner.nextLine();
-            String password = PasswordValidation.readPassword("Парола: ");
-            String response = ConsoleService.postJson(
+            ApiResponse response = httpClientService.postJson(
                     "/auth/login",
                     new UserLoginRequest(username, password)
             );
 
-            UserDTO dto = mapper.readValue(response, UserDTO.class);
-            User user = new User(dto.getId(), dto.getUsername(), dto.getRole(), dto.getName(), dto.getPhone());
-            ConsoleSession.login(user);
-            System.out.println("Успешен вход!");
+            if (response.isSuccess()) {
 
-        } catch (Exception e) {
-            System.out.println("Грешно потребителско име или парола.");
-        }
-    }
+                UserDTO dto = mapper.readValue(response.getBody(), UserDTO.class);
+                User user = new User(dto.getId(), dto.getUsername(), dto.getRole(), dto.getName(), dto.getPhone());
+                ConsoleSession.login(user);
+                return new LoginResult(true, "Успешен вход!", user);
 
-    public void register(Scanner scanner) {
+            } else {
 
-        try {
-
-            String username;
-
-            while (true) {
-
-                System.out.print("Потребителско име: ");
-                username = scanner.nextLine();
-                String exists = ConsoleService.get("/auth/check/username?username=" + username);
-                if ("exists".equalsIgnoreCase(exists.trim())) {
-                    System.out.println("Потребител с това име вече съществува.");
-                } else {
-                    break;
-                }
+                String message = ErrorResponseUtil.extract(response);
+                return new LoginResult(false, message, null);
 
             }
 
-            String password = PasswordValidation.readPassword("Парола: ");
-            String name = NameValidation.readName("Име: ");
-            String phone = PhoneValidation.readPhone("Телефон: ");
-            UserRole role = RoleValidation.readRole("Роля");
-            String response = ConsoleService.postJson(
-                    "/auth/register",
-                    new UserRegisterRequest(username, password, role, name, phone)
-            );
-
-            System.out.println(response);
         } catch (Exception e) {
-            System.out.println("Грешка при регистрация.");
+            return new LoginResult(false, "Грешка при вход: " + e.getMessage(), null);
         }
     }
 
+    public RegisterResult register(UserRegisterRequest req) {
+
+        try {
+
+            ApiResponse checkResponse = httpClientService.get("/auth/check/username?username=" + req.getUsername());
+
+            if (checkResponse.isSuccess() && "exists".equalsIgnoreCase(checkResponse.getBody().trim())) {
+                return new RegisterResult(false, "Потребител с това име вече съществува.");
+            }
+
+            ApiResponse registerResponse = httpClientService.postJson("/auth/register", req);
+
+            if (registerResponse.isSuccess()) {
+                return new RegisterResult(true, "Регистрацията е успешна.");
+            } else {
+
+                String message = ErrorResponseUtil.extract(registerResponse);
+                return new RegisterResult(false, message);
+
+            }
+
+        } catch (Exception e) {
+            return new RegisterResult(false, "Грешка при регистрация: " + e.getMessage());
+        }
+    }
+
+    public String checkUsername(String username) {
+        return httpClientService.get("/auth/check/username?username=" + username).getBody();
+    }
 }

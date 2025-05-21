@@ -1,6 +1,9 @@
 package com.example.pizzeria.console;
 
+import com.example.pizzeria.console.controller.AuthController;
 import com.example.pizzeria.console.controller.OrderController;
+import com.example.pizzeria.console.controller.ProductController;
+import com.example.pizzeria.console.http.HttpClientService;
 import com.example.pizzeria.console.view.AuthView;
 import com.example.pizzeria.console.view.CustomerView;
 import com.example.pizzeria.console.view.EmployeeView;
@@ -13,16 +16,22 @@ public class ConsoleApp {
         Thread.sleep(2000);
         // изчакване за сървъра
 
-        AuthView authView = new AuthView();
-        CustomerView customerView = new CustomerView();
-        EmployeeView employeeView = new EmployeeView();
+        HttpClientService httpClient = new HttpClientService();
 
-        OrderController orderCtrl = new OrderController();
-        NotificationService notifier = new NotificationService(orderCtrl);
+        AuthController authController = new AuthController(httpClient);
+        OrderController orderController = new OrderController(httpClient);
+        ProductController productController = new ProductController(httpClient);
+
+        AuthView authView = new AuthView(authController);
+        CustomerView customerView = new CustomerView(productController, orderController);
+        EmployeeView employeeView = new EmployeeView(productController, orderController);
+
+        NotificationService notifier = new NotificationService(orderController);
 
         boolean notifierStarted = false;
 
         while (true) {
+
             if (!ConsoleSession.isLoggedIn()) {
 
                 authView.show();
