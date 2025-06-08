@@ -5,6 +5,7 @@ import com.example.pizzeria.console.controller.AuthController;
 import com.example.pizzeria.console.model.LoginResult;
 import com.example.pizzeria.console.model.MenuItem;
 import com.example.pizzeria.console.validations.PasswordValidation;
+import com.example.pizzeria.console.view.input.PasswordInput;
 
 import java.util.Scanner;
 
@@ -30,7 +31,7 @@ public class LoginMenuItem implements MenuItem {
 
         System.out.print("Потребителско име: ");
         String username = scanner.nextLine();
-        String password = PasswordValidation.readPassword("Парола: ");
+        String password = PasswordInput.readPassword("Парола: ");
 
         LoginResult result = controller.login(username, password);
 

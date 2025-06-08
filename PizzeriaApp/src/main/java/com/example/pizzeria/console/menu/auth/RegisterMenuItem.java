@@ -7,6 +7,10 @@ import com.example.pizzeria.console.validations.NameValidation;
 import com.example.pizzeria.console.validations.PasswordValidation;
 import com.example.pizzeria.console.validations.PhoneValidation;
 import com.example.pizzeria.console.validations.RoleValidation;
+import com.example.pizzeria.console.view.input.NameInput;
+import com.example.pizzeria.console.view.input.PasswordInput;
+import com.example.pizzeria.console.view.input.PhoneInput;
+import com.example.pizzeria.console.view.input.RoleInput;
 import com.example.pizzeria.controllers.requests.UserRegisterRequest;
 import com.example.pizzeria.enumerators.UserRole;
 
@@ -50,10 +54,10 @@ public class RegisterMenuItem implements MenuItem {
                 }
             }
 
-            String password = PasswordValidation.readPassword("Парола: ");
-            String name = NameValidation.readName("Име: ");
-            String phone = PhoneValidation.readPhone("Телефон: ");
-            UserRole role = RoleValidation.readRole("Роля");
+            String password = PasswordInput.readPassword("Парола: ");
+            String name = NameInput.readName("Име: ");
+            String phone = PhoneInput.readPhone("Телефон: ");
+            UserRole role = RoleInput.readRole("Роля");
 
             UserRegisterRequest req = new UserRegisterRequest(username, password, role, name, phone);
             RegisterResult result = controller.register(req);

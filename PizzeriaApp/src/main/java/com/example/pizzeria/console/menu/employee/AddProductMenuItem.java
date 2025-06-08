@@ -3,6 +3,7 @@ package com.example.pizzeria.console.menu.employee;
 import com.example.pizzeria.console.controller.ProductController;
 import com.example.pizzeria.console.model.MenuItem;
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class AddProductMenuItem implements MenuItem {
@@ -24,6 +25,21 @@ public class AddProductMenuItem implements MenuItem {
 
     @Override
     public void execute() {
-        productController.add(scanner);
+
+        try {
+
+            System.out.print("Име: ");
+            String name = scanner.nextLine();
+
+            System.out.print("Цена: ");
+            String priceInput = scanner.nextLine();
+            BigDecimal price = new BigDecimal(priceInput);
+
+            productController.addProduct(name, price);
+
+        } catch (Exception e) {
+            System.out.println("Грешка при добавяне на продукт: " + e.getMessage());
+        }
+
     }
 }

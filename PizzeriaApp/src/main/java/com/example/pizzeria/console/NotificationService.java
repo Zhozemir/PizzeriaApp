@@ -1,21 +1,39 @@
 package com.example.pizzeria.console;
 
 import com.example.pizzeria.console.controller.OrderController;
+import com.example.pizzeria.console.notifications.OrderDeliveredListener;
 import com.example.pizzeria.dto.OrderDTO;
 import com.example.pizzeria.enumerators.OrderStatus;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NotificationService {
 
     private final OrderController orderCtrl;
     private final Set<Long> seenDelivered = new HashSet<>();
+    private final List<OrderDeliveredListener> listeners = new CopyOnWriteArrayList<>();
 
     public NotificationService(OrderController orderCtrl){
         this.orderCtrl = orderCtrl;
+    }
+
+    public void addListener(OrderDeliveredListener listener){
+        listeners.add(listener);
+    }
+
+    public void removeListener(OrderDeliveredListener listener){
+        listeners.remove(listener);
+    }
+
+    private void notifyListeners(long orderId){
+
+        for(OrderDeliveredListener listener : listeners){
+            listener.onOrderDelivered(orderId);
+        }
+
     }
 
     // стартира се нишка, която на всеки 10 секунди проверява доставените поръчки
@@ -33,15 +51,7 @@ public class NotificationService {
                         continue;
                     }
 
-//                    Optional<List<OrderDTO>> result = orderCtrl.listMyJson();
-//
-//                    if (result.isEmpty()) {
-//                        System.err.println("Неуспешно зареждане на поръчките за текущия потребител.");
-//                        continue;
-//                    }
-
-                    List<OrderDTO> orders = orderCtrl.listMyJson();
-                    //List<OrderDTO> orders = orderCtrl.listMyJson();
+                    List<OrderDTO> orders = orderCtrl.getMyOrders();
                     Set<Long> delivered = new HashSet<>();
 
                    for(OrderDTO o : orders){
@@ -54,7 +64,7 @@ public class NotificationService {
                    for(Long id : delivered){
 
                        if(!seenDelivered.contains(id))
-                           System.out.printf("%nПоръчка %d е доставена.", id);
+                           notifyListeners(id);
 
                    }
 

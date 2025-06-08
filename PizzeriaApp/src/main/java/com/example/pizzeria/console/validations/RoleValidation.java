@@ -2,25 +2,21 @@ package com.example.pizzeria.console.validations;
 
 import com.example.pizzeria.enumerators.UserRole;
 
-import java.util.Scanner;
-
 public class RoleValidation {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    public static boolean isValid(String input){
 
-    public static UserRole readRole(String message) {
+        if(input == null)
+            return false;
 
-        while(true) {
-
-            System.out.print(message + " (CUSTOMER / EMPLOYEE): ");
-            String input = scanner.nextLine().trim().toUpperCase();
-
-            try {
-                return UserRole.valueOf(input);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Невалидна роля. Опитайте отново.");
-            }
+        try{
+            UserRole.valueOf(input.toUpperCase());
+            return true;
+        } catch (IllegalArgumentException e){
+            return false;
         }
+
     }
+
 }
 
