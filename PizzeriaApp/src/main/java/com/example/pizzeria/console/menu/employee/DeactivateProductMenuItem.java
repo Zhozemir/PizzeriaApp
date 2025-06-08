@@ -2,7 +2,9 @@ package com.example.pizzeria.console.menu.employee;
 
 import com.example.pizzeria.console.controller.ProductController;
 import com.example.pizzeria.console.model.MenuItem;
+import com.example.pizzeria.dto.ProductDTO;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class DeactivateProductMenuItem implements MenuItem {
@@ -26,7 +28,23 @@ public class DeactivateProductMenuItem implements MenuItem {
     public void execute() {
 
         try {
-            productController.deactivate(scanner);
+
+            List<ProductDTO> activeProducts = productController.listActive();
+
+            if(activeProducts.isEmpty()){
+                System.out.println("Няма активни продукти за деактивиране.");
+                return;
+            }
+
+            System.out.println("Активни продукти:");
+            activeProducts.forEach(p -> System.out.printf("%d) %s – %.2f лв.%n", p.getId(), p.getName(), p.getPrice()));
+
+            System.out.print("ID на продукт за деактивиране: ");
+            String idInput = scanner.nextLine().trim();
+            long id = Long.parseLong(idInput);
+
+            productController.deactivateProduct(id);
+
         } catch (Exception e) {
             System.out.println("Грешка при деактивиране на продукт.");
         }

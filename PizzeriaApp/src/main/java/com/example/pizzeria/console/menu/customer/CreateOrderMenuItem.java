@@ -46,7 +46,8 @@ public class CreateOrderMenuItem implements MenuItem {
             System.out.print("ID-та (разделени със запетая): ");
             var input = scanner.nextLine();
             var ids = OrderController.parseIds(input);
-            orderController.create(ids);
+            orderController.createOrder(ids);
+
 
         } catch (Exception e) {
             System.out.println("Грешка при създаване на поръчка.");

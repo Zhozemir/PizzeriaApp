@@ -5,8 +5,6 @@ import com.example.pizzeria.controllers.requests.OrderCreateRequest;
 import com.example.pizzeria.dto.OrderDTO;
 import com.example.pizzeria.enumerators.OrderStatus;
 import com.example.pizzeria.mappers.OrderMapper;
-import com.example.pizzeria.models.Order;
-import com.example.pizzeria.printing.OrderPrinter;
 import com.example.pizzeria.services.interfaces.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +31,7 @@ public class OrderController {
 
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<String> createOrder(@RequestBody OrderCreateRequest orderCreateRequest) {
 
         orderControllerValidator.validateCreateOrder(orderCreateRequest);
@@ -54,28 +52,29 @@ public class OrderController {
 
     }
 
-    //Ендпойнт за отпечатване (с използване на ascii)
-    @GetMapping("/print")
-    public String printOrders() {
+    @GetMapping("/my")
+    public ResponseEntity<List<OrderDTO>> getMyOrders(){
 
-        List<Order> orders = orderService.getAllOrders();
+        List<OrderDTO> dtos = orderService.getOrdersByUser()
+                .stream()
+                .map(orderMapper::toDTO)
+                .toList();
 
-        if(orders.isEmpty())
-            return "Няма поръчки";
+        return ResponseEntity.ok(dtos);
 
-        return OrderPrinter.getPrintedOrders(orders);
     }
 
+    @GetMapping("/my/delivered")
+    public ResponseEntity<List<OrderDTO>> getMyDeliveredOrders(){
 
-    @GetMapping("/my")
-    public String getMyOrders() {
+        List<OrderDTO> dtos = orderService.getOrdersByUser()
+                .stream()
+                .filter(o -> o.getStatus() == OrderStatus.DELIVERED)
+                .map(orderMapper::toDTO)
+                .toList();
 
-        List<Order> orders = orderService.getOrdersByUser();
+        return ResponseEntity.ok(dtos);
 
-        if(orders.isEmpty())
-            return "Няма поръчки";
-
-        return OrderPrinter.getPrintedOrders(orders);
     }
 
     @GetMapping("/my/json")
@@ -87,35 +86,6 @@ public class OrderController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/delivered/print")
-    public String printDeliveredOrders(){
-
-        List<Order> deliveredOrders = orderService.getOrdersByStatus(OrderStatus.DELIVERED);
-
-        if(deliveredOrders.isEmpty())
-            return "Няма завършени поръчки";
-
-        return OrderPrinter.getPrintedOrders(deliveredOrders);
-
-    }
-
-    // only current customer delivered orders
-    @GetMapping("my/delivered/print")
-    public String printMyDeliveredOrders(){
-
-        List<Order> myOrders = orderService.getOrdersByUser();
-
-        List<Order> delivered = myOrders.stream()
-                .filter(o -> o.getStatus() == OrderStatus.DELIVERED)
-                .toList();
-
-        if(delivered.isEmpty())
-            return "Няма завършени поръчки за повторение.";
-
-        return OrderPrinter.getPrintedOrders(delivered);
-
     }
 
     @PutMapping("/{id}/status")
@@ -137,16 +107,6 @@ public class OrderController {
                 .toList();
         return ResponseEntity.ok(orders);
 
-    }
-
-    @GetMapping("/period/print")
-    public ResponseEntity<String> getOrdersByPeriodPrinted(@RequestParam LocalDateTime startTime, @RequestParam LocalDateTime endTime) {
-
-        List<Order> orders = orderService.getOrdersByPeriod(startTime, endTime);
-
-        return orders.isEmpty()
-                ? ResponseEntity.ok("Няма поръчки в този период")
-                : ResponseEntity.ok(OrderPrinter.getPrintedOrders(orders));
     }
 
     @PostMapping("/{id}/repeat")

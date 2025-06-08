@@ -7,23 +7,19 @@ import java.util.Scanner;
 
 public class DateTimeValidation {
 
-    private static final Scanner scanner = new Scanner(System.in);
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
-    public static String readDateTime(String message) {
-        while (true) {
-            System.out.print(message);
-            String input = scanner.nextLine().trim();
+    public static boolean isValid(String input){
 
-            try {
+        try{
 
-                LocalDateTime.parse(input, FORMATTER);
-                return input;
+            LocalDateTime.parse(input, FORMATTER);
+            return true;
 
-            } catch (DateTimeParseException e) {
-                System.out.println("Невалиден формат за дата/час. Пример: 2023-03-01T00:00");
-            }
+        } catch (DateTimeParseException e){
+            return false;
         }
+
     }
 
 }
