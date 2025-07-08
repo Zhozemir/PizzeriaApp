@@ -1,14 +1,17 @@
 package com.example.pizzeria.console.view.input;
 
-import com.example.pizzeria.console.validations.IdValidation;
+import com.example.pizzeria.console.validation.validators.IdValidator;
+import com.example.pizzeria.console.validation.ValidationResult;
+import com.example.pizzeria.console.validation.Validator;
 
 import java.util.Scanner;
 
 public class IdInput {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Validator validator = new IdValidator();
+    private final Scanner scanner = new Scanner(System.in);
 
-    public static Long readId(String message){
+    public Long readId(String message){
 
         while (true) {
 
@@ -16,11 +19,12 @@ public class IdInput {
 
             String input = scanner.nextLine().trim();
 
-            if(IdValidation.isValid(input)){
-                return Long.parseLong(input);
-            }
+            ValidationResult vr = validator.validate(input);
 
-            System.out.println("Невалидно ID. Опитайте отново.");
+            if(vr.isValid())
+                return Long.parseLong(input);
+
+            System.out.println(vr.getErrorMessage());
 
         }
 

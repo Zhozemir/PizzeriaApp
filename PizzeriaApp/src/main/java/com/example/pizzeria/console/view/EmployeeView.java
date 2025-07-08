@@ -1,14 +1,9 @@
 package com.example.pizzeria.console.view;
 
-import com.example.pizzeria.console.ConsoleSession;
 import com.example.pizzeria.console.controller.OrderController;
 import com.example.pizzeria.console.controller.ProductController;
-import com.example.pizzeria.console.http.HttpClientService;
 import com.example.pizzeria.console.menu.employee.*;
 import com.example.pizzeria.console.model.MenuItem;
-import com.example.pizzeria.console.validations.DateTimeValidation;
-import com.example.pizzeria.dto.OrderDTO;
-import com.example.pizzeria.dto.ProductDTO;
 
 import java.util.List;
 import java.util.Scanner;

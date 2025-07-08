@@ -1,28 +1,34 @@
 package com.example.pizzeria.console.view.input;
 
-import com.example.pizzeria.console.validations.RoleValidation;
+import com.example.pizzeria.console.validation.validators.RoleValidator;
+import com.example.pizzeria.console.validation.ValidationResult;
+import com.example.pizzeria.console.validation.Validator;
 import com.example.pizzeria.enumerators.UserRole;
 
 import java.util.Scanner;
 
 public class RoleInput {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Validator validator = new RoleValidator();
+    private final Scanner scanner = new Scanner(System.in);
 
-    public static UserRole readRole(String message) {
+    public UserRole readRole(String message){
 
-        while(true) {
+        while(true){
 
-            System.out.print(message + " (CUSTOMER / EMPLOYEE): ");
-            String input = scanner.nextLine().trim().toUpperCase();
+            System.out.println(message + " CUSTOMER / EMPLOYEE: ");
 
-            if(RoleValidation.isValid(input)){
-                return UserRole.valueOf(input);
-            }
+            String input = scanner.nextLine().trim();
 
-            System.out.println("Невалидна роля. Опитайте отново.");
+            ValidationResult vr = validator.validate(input);
+
+            if(vr.isValid())
+                return UserRole.valueOf(input.toUpperCase());
+
+            System.out.println(vr.getErrorMessage());
 
         }
+
     }
 
 }

@@ -21,6 +21,10 @@ public class OrderMapper {
         dto.setStatus(order.getStatus().name());
         dto.setCreatedOn(order.getCreatedOn().format(FORMATTER));
 
+        if(dto.getDeliveredOn() != null){
+            dto.setDeliveredOn(dto.getDeliveredOn().toString());
+        }
+
         dto.setProductNames(order.getProducts().stream()
                 .map(Product::getName)
                 .collect(Collectors.toList()));

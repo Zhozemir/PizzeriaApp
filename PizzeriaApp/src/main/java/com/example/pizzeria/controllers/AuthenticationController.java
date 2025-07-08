@@ -5,10 +5,16 @@ import com.example.pizzeria.dto.UserDTO;
 import com.example.pizzeria.controllers.requests.UserLoginRequest;
 import com.example.pizzeria.controllers.requests.UserRegisterRequest;
 import com.example.pizzeria.mappers.UserMapper;
+import com.example.pizzeria.models.User;
+import com.example.pizzeria.services.exceptions.AuthenticationException;
+import com.example.pizzeria.services.exceptions.UserNotFoundException;
 import com.example.pizzeria.services.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 // endpoint tests???...
 
@@ -30,11 +36,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserRegisterRequest userRegisterRequest) {
+    public ResponseEntity<UserDTO> register(@RequestBody UserRegisterRequest userRegisterRequest) {
 
         authenticationControllerValidator.validateUserRegister(userRegisterRequest);
 
-        userService.registerUser(
+        User created = userService.registerUser(
                 userRegisterRequest.getUsername(),
                 userRegisterRequest.getPassword(),
                 userRegisterRequest.getRole(),
@@ -42,7 +48,11 @@ public class AuthenticationController {
                 userRegisterRequest.getPhone()
         );
 
-        return ResponseEntity.ok("Регистрацията е успешна.");
+        UserDTO dto = userMapper.toDTO(created);
+
+        URI location = URI.create("/api/auth" + dto.getId());
+
+        return ResponseEntity.created(location).body(dto);
 
     }
 
@@ -51,18 +61,31 @@ public class AuthenticationController {
 
         authenticationControllerValidator.validateUserLogin(userLoginRequest);
 
-        return userService.login(userLoginRequest.getUsername(), userLoginRequest.getPassword())
-                .map(user -> ResponseEntity.ok(userMapper.toDTO(user)))
-                .orElseThrow(()->new IllegalArgumentException("Грешно потребителско име или парола."));
+        try{
+
+            User user = userService.authenticate(userLoginRequest.getUsername(), userLoginRequest.getPassword());
+
+            UserDTO dto = userMapper.toDTO(user);
+
+            return ResponseEntity.ok(dto);
+
+        } catch (AuthenticationException ex){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
     }
 
     @GetMapping("/check/username")
     public ResponseEntity<String> checkUsername(@RequestParam String username) {
 
-        return userService.findByUsername(username).isPresent()
-                ? ResponseEntity.ok("exists")
-                : ResponseEntity.ok("not exists");
+        try{
+
+            userService.getByUsername(username);
+            return ResponseEntity.ok().build();
+
+        } catch (UserNotFoundException ex){
+            return ResponseEntity.notFound().build();
+        }
 
     }
 

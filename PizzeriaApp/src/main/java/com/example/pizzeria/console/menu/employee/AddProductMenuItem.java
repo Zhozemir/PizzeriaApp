@@ -1,6 +1,8 @@
 package com.example.pizzeria.console.menu.employee;
 
 import com.example.pizzeria.console.controller.ProductController;
+import com.example.pizzeria.console.exceptions.ConsoleServerException;
+import com.example.pizzeria.console.exceptions.ConsoleValidationException;
 import com.example.pizzeria.console.model.MenuItem;
 
 import java.math.BigDecimal;
@@ -37,8 +39,10 @@ public class AddProductMenuItem implements MenuItem {
 
             productController.addProduct(name, price);
 
-        } catch (Exception e) {
-            System.out.println("Грешка при добавяне на продукт: " + e.getMessage());
+        } catch (ConsoleValidationException | ConsoleServerException ex) {
+            System.out.println(ex.getMessage());
+        } catch (Exception ex){
+            System.out.println("Неочаквана грешка.");
         }
 
     }

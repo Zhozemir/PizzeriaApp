@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface UserService {
 
-    void registerUser(String username, String password, UserRole role, String name, String phone);
-    Optional<User> login(String username, String password);
-    Optional<User> findByUsername(String username);
+    User registerUser (String username, String password, UserRole role, String name, String phone);
+    User authenticate (String username, String password);
+    User getByUsername(String username);
 
 }
 

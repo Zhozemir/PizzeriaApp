@@ -1,26 +1,30 @@
 package com.example.pizzeria.console.view.input;
 
-import com.example.pizzeria.console.validations.NameValidation;
+import com.example.pizzeria.console.validation.validators.NameValidator;
+import com.example.pizzeria.console.validation.ValidationResult;
+import com.example.pizzeria.console.validation.Validator;
 
 import java.util.Scanner;
 
 public class NameInput {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Validator validator = new NameValidator();
+    private final Scanner scanner = new Scanner(System.in);
 
-    public static String readName(String message){
+    public String readName(String message){
 
         while(true){
 
             System.out.print(message);
 
-            String name = scanner.nextLine().trim();
+            String input = scanner.nextLine().trim();
 
-            if(NameValidation.isValid(name)){
-                return name;
-            }
+            ValidationResult vr = validator.validate(input);
 
-            System.out.println("Името трябва да започва с главна буква и да съдържа само малки букви след това. Опитайте отново.");
+            if(vr.isValid())
+                return input;
+
+            System.out.println(vr.getErrorMessage());
 
         }
 

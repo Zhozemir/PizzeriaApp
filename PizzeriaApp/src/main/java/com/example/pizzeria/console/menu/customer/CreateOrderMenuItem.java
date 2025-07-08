@@ -2,6 +2,8 @@ package com.example.pizzeria.console.menu.customer;
 
 import com.example.pizzeria.console.controller.OrderController;
 import com.example.pizzeria.console.controller.ProductController;
+import com.example.pizzeria.console.exceptions.ConsoleServerException;
+import com.example.pizzeria.console.exceptions.ConsoleValidationException;
 import com.example.pizzeria.console.model.MenuItem;
 import com.example.pizzeria.dto.ProductDTO;
 
@@ -49,8 +51,11 @@ public class CreateOrderMenuItem implements MenuItem {
             orderController.createOrder(ids);
 
 
-        } catch (Exception e) {
-            System.out.println("Грешка при създаване на поръчка.");
+        } catch (ConsoleValidationException | ConsoleServerException ex) {
+            System.out.println(ex.getMessage());
+        } catch (Exception ex){
+            System.out.println("Неочаквана грешка при създаване на поръчка.");
         }
+
     }
 }

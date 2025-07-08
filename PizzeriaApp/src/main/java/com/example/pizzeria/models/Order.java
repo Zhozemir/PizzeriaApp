@@ -12,6 +12,7 @@ public class Order {
     private List<Product> products = new ArrayList<>();
     private OrderStatus status;
     private LocalDateTime createdOn;
+    private LocalDateTime deliveredOn;
 
     private User user;
 
@@ -58,6 +59,14 @@ public class Order {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public LocalDateTime getDeliveredOn(){
+        return deliveredOn;
+    }
+
+    public void setDeliveredOn(LocalDateTime deliveredOn){
+        this.deliveredOn = deliveredOn;
     }
 
     @Override

@@ -1,14 +1,17 @@
 package com.example.pizzeria.console.view.input;
 
-import com.example.pizzeria.console.validations.ChoiceValidation;
+import com.example.pizzeria.console.validation.validators.ChoiceValidator;
+import com.example.pizzeria.console.validation.ValidationResult;
+import com.example.pizzeria.console.validation.Validator;
 
 import java.util.Scanner;
 
 public class ChoiceInput {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Validator validator = new ChoiceValidator();
+    private final Scanner scanner = new Scanner(System.in);
 
-    public static int readChoice(String message) {
+    public int readChoice(String message) {
 
         while (true) {
 
@@ -16,11 +19,12 @@ public class ChoiceInput {
 
             String input = scanner.nextLine();
 
-            if(ChoiceValidation.isValid(input)){
-                return Integer.parseInt(input);
-            }
+            ValidationResult vr = validator.validate(input);
 
-            System.out.println("Невалиден избор.");
+            if(vr.isValid())
+                return Integer.parseInt(input);
+
+            System.out.println(vr.getErrorMessage());
 
         }
     }

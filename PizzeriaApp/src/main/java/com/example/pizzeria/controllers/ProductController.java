@@ -4,11 +4,13 @@ import com.example.pizzeria.controllers.validators.ProductControllerValidator;
 import com.example.pizzeria.controllers.requests.ProductCreateRequest;
 import com.example.pizzeria.dto.ProductDTO;
 import com.example.pizzeria.mappers.ProductMapper;
+import com.example.pizzeria.models.Product;
 import com.example.pizzeria.services.interfaces.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,13 +32,20 @@ public class ProductController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addProduct(@RequestBody ProductCreateRequest productCreateRequest) {
+    public ResponseEntity<ProductDTO> addProduct(@RequestBody ProductCreateRequest productCreateRequest) {
 
         productControllerValidator.createProductValidator(productCreateRequest);
 
-        productService.addProduct(productCreateRequest.getName(), productCreateRequest.getPrice());
+        Product created = productService.addProduct(productCreateRequest.getName(), productCreateRequest.getPrice());
 
-        return ResponseEntity.ok("Продуктът е добавен");
+        ProductDTO dto = productMapper.toDTO(created);
+
+        URI location = URI.create("/api/products" + dto.getId());
+
+        return ResponseEntity
+                .created(location)
+                        .body(dto);
+
 
     }
 
@@ -51,13 +60,13 @@ public class ProductController {
     }
 
     @PutMapping("/{id}/deactivate")
-    public ResponseEntity<String> deactivateProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deactivateProduct(@PathVariable Long id) {
 
         productControllerValidator.validateDeactivateProduct(id);
 
         productService.deactivateProduct(id);
 
-        return ResponseEntity.ok("Продуктът е деактивиран");
+        return ResponseEntity.noContent().build();
 
     }
 

@@ -5,6 +5,7 @@ import com.example.pizzeria.console.notifications.OrderDeliveredListener;
 import com.example.pizzeria.dto.OrderDTO;
 import com.example.pizzeria.enumerators.OrderStatus;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,8 +14,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class NotificationService {
 
     private final OrderController orderCtrl;
-    private final Set<Long> seenDelivered = new HashSet<>();
     private final List<OrderDeliveredListener> listeners = new CopyOnWriteArrayList<>();
+    private LocalDateTime lastCheck = LocalDateTime.now();
 
     public NotificationService(OrderController orderCtrl){
         this.orderCtrl = orderCtrl;
@@ -43,7 +44,7 @@ public class NotificationService {
 
             while(!Thread.currentThread().isInterrupted()){
 
-                try{
+                try {
 
                     Thread.sleep(10_000);
 
@@ -51,31 +52,18 @@ public class NotificationService {
                         continue;
                     }
 
-                    List<OrderDTO> orders = orderCtrl.getMyOrders();
-                    Set<Long> delivered = new HashSet<>();
+                    List<OrderDTO> newDelivered = orderCtrl.getMyDeliveredAfter(lastCheck);
 
-                   for(OrderDTO o : orders){
+                    for (OrderDTO o : newDelivered) {
+                        notifyListeners(o.getId());
+                    }
 
-                       if(OrderStatus.DELIVERED.name().equals(o.getStatus()))
-                           delivered.add(o.getId());
+                    lastCheck = LocalDateTime.now();
 
-                   }
-
-                   for(Long id : delivered){
-
-                       if(!seenDelivered.contains(id))
-                           notifyListeners(id);
-
-                   }
-
-                   seenDelivered.clear();
-                   seenDelivered.addAll(delivered);
-
-                } catch (InterruptedException e){
+                } catch (InterruptedException ex){
                     Thread.currentThread().interrupt();
                 } catch (Exception ex){
                     System.out.println("Грешка при NotificationsService: " + ex.getMessage());
-                    ex.printStackTrace();
                 }
 
             }

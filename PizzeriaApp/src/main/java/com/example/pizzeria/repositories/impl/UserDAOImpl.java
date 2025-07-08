@@ -3,6 +3,7 @@ package com.example.pizzeria.repositories.impl;
 import com.example.pizzeria.database.Database;
 import com.example.pizzeria.enumerators.UserRole;
 import com.example.pizzeria.models.User;
+import com.example.pizzeria.repositories.DataAccessException;
 import com.example.pizzeria.repositories.interfaces.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -30,26 +31,24 @@ public class UserDAOImpl implements UserDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
+            try(ResultSet rs = ps.executeQuery()){
 
-            if(rs.next()) {
+                if(!rs.next())
+                    return Optional.empty();
 
-                User user = new User();
-                user.setId(rs.getLong("id"));
-                user.setUsername(rs.getString("username"));
-                user.setPassword(rs.getString("password"));
-                user.setRole(UserRole.valueOf(rs.getString("role")));
-                user.setName(rs.getString("name"));
-                user.setPhone(rs.getString("phone"));
+                User user = mapRowToUser(rs);
 
                 return Optional.of(user);
 
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+
+            throw new DataAccessException(
+                    "Грешка при търсене на потребителско име = " + username, e
+            );
+
         }
-        return Optional.empty();
     }
 
     @Override
@@ -78,8 +77,23 @@ public class UserDAOImpl implements UserDAO {
 
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Грешка при записване на потребител: " + user.getUsername(), e);
         }
-        return false;
     }
+
+    private User mapRowToUser (ResultSet rs) throws SQLException {
+
+        User user  = new User();
+
+        user.setId(rs.getLong("id"));
+        user.setUsername(rs.getString("username"));
+        user.setPassword(rs.getString("password"));
+        user.setRole(UserRole.valueOf(rs.getString("role")));
+        user.setName(rs.getString("name"));
+        user.setPhone(rs.getString("phone"));
+
+        return user;
+
+    }
+
 }

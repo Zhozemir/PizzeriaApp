@@ -1,6 +1,8 @@
 package com.example.pizzeria.console.menu.employee;
 
 import com.example.pizzeria.console.controller.ProductController;
+import com.example.pizzeria.console.exceptions.ConsoleServerException;
+import com.example.pizzeria.console.exceptions.ConsoleValidationException;
 import com.example.pizzeria.console.model.MenuItem;
 import com.example.pizzeria.dto.ProductDTO;
 
@@ -45,8 +47,10 @@ public class DeactivateProductMenuItem implements MenuItem {
 
             productController.deactivateProduct(id);
 
-        } catch (Exception e) {
-            System.out.println("Грешка при деактивиране на продукт.");
+        } catch (ConsoleValidationException | ConsoleServerException ex) {
+            System.out.println(ex.getMessage());
+        } catch (Exception ex){
+            System.out.println("Неочаквана грешка.");
         }
     }
 }

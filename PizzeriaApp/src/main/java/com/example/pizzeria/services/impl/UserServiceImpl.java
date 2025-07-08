@@ -1,10 +1,14 @@
 package com.example.pizzeria.services.impl;
 
-import com.example.pizzeria.domain.exceptions.UserAlreadyExistsException;
 import com.example.pizzeria.enumerators.UserRole;
 import com.example.pizzeria.models.User;
+import com.example.pizzeria.repositories.DataAccessException;
 import com.example.pizzeria.repositories.interfaces.UserDAO;
 import com.example.pizzeria.security.PasswordHashing;
+import com.example.pizzeria.services.exceptions.AuthenticationException;
+import com.example.pizzeria.services.exceptions.UserAlreadyExistsException;
+import com.example.pizzeria.services.exceptions.UserNotFoundException;
+import com.example.pizzeria.services.exceptions.ValidationException;
 import com.example.pizzeria.services.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,37 +26,67 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void registerUser(String username, String password, UserRole role, String name, String phone) {
+    public User registerUser(String username, String password, UserRole role, String name, String phone) {
 
-        Optional<User> existingUser = userDAO.findByUsername(username);
+        if(username == null || username.isBlank())
+            throw new ValidationException("Потребителското име е задължително.");
 
-       // if(existingUser.isPresent())
-            //return false;
+        if(userDAO.findByUsername(username).isPresent())
+            throw new UserAlreadyExistsException(username);
 
-        if(existingUser.isPresent())
-            throw new UserAlreadyExistsException();
-
-        String hashedPassword = PasswordHashing.hashPassword(password);
+        String hashedPassword  = PasswordHashing.hashPassword(password);
         User user = new User(username, hashedPassword, role, name, phone);
 
-        userDAO.save(user);
+        try{
+
+            boolean saved = userDAO.save(user);
+
+            if(!saved){
+                throw new org.springframework.dao.DataAccessException("Неуспешно записване на потребител.") {};
+            }
+
+        } catch (DataAccessException ex){
+            throw ex;
+        } catch (Exception ex){
+            throw new DataAccessException("Грешка при запис на нов потребител.", ex);
+        }
+
+        return user;
 
     }
 
     @Override
-    public Optional<User> login(String username, String password) {
+    public User authenticate(String username, String password) {
 
-        Optional<User> userOpt = userDAO.findByUsername(username);
+        Optional<User> userOpt;
 
-        if(userOpt.isPresent() && PasswordHashing.matchPassword(password, userOpt.get().getPassword()))
-            return userOpt;
+        try{
+            userOpt = userDAO.findByUsername(username);
+        } catch (Exception ex){
+            throw new DataAccessException("Грешка при достъп до данни.", ex) {};
+        }
 
-        return Optional.empty();
+        User user  = userOpt.orElseThrow(AuthenticationException::new);
+
+        if(!PasswordHashing.matchPassword(password, user.getPassword())){
+            throw new AuthenticationException();
+        }
+
+        return user;
+
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return userDAO.findByUsername(username);
+    public User getByUsername (String username) {
+
+        try{
+            return userDAO.findByUsername(username)
+                    .orElseThrow(() -> new UserNotFoundException(username));
+        } catch (UserNotFoundException ex){
+            throw ex;
+        } catch (Exception ex){
+            throw new DataAccessException("Грешка при достъп до данни.", ex) {};
+        }
     }
 
 }
