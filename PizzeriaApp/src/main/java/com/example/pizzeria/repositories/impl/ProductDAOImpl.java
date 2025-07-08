@@ -2,10 +2,12 @@ package com.example.pizzeria.repositories.impl;
 
 import com.example.pizzeria.database.Database;
 import com.example.pizzeria.models.Product;
+import com.example.pizzeria.repositories.DataAccessException;
 import com.example.pizzeria.repositories.interfaces.ProductDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.print.attribute.standard.DateTimeAtCompleted;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
@@ -36,45 +38,50 @@ public class ProductDAOImpl implements ProductDAO {
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) return false;
 
-            ResultSet keys = ps.getGeneratedKeys();
+            try(ResultSet keys = ps.getGeneratedKeys()) {
 
-            if(keys.next())
-                product.setId(keys.getLong(1));
+                if (keys.next())
+                    product.setId(keys.getLong(1));
+
+            }
 
             return true;
+
         } catch(SQLException e) {
-            e.printStackTrace();
+
+            throw new DataAccessException(
+                    "Грешка при записване на продукт: " + product.getName(), e
+            );
+
         }
-        return false;
     }
 
     @Override
     public Optional<Product> findById(Long id) {
 
         String sql = "SELECT * FROM products WHERE id = ?";
+
         try (Connection conn = dataSource.getConnection();
 
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setLong(1, id);
 
-            ResultSet rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
 
-            if(rs.next()) {
+                if (!rs.next())
+                    return Optional.empty();
 
-                Product product = new Product();
-                product.setId(rs.getLong("id"));
-                product.setName(rs.getString("name"));
-                product.setPrice(rs.getBigDecimal("price"));
-                product.setActive(rs.getBoolean("is_active"));
+                Product product = mapRowToProduct(rs);
                 return Optional.of(product);
 
             }
 
-        } catch(SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+
+            throw new DataAccessException("Грешка при четене на продукт с ID=" + id, e);
+
         }
-        return Optional.empty();
     }
 
     @Override
@@ -89,20 +96,14 @@ public class ProductDAOImpl implements ProductDAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while(rs.next()) {
-
-                Product product = new Product();
-                product.setId(rs.getLong("id"));
-                product.setName(rs.getString("name"));
-                product.setPrice(rs.getBigDecimal("price"));
-                product.setActive(rs.getBoolean("is_active"));
-                products.add(product);
-
+                products.add(mapRowToProduct(rs));
             }
 
+            return products;
+
         } catch(SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Грешка при зареждане на активни продукти", e);
         }
-        return products;
     }
 
     @Override
@@ -121,14 +122,25 @@ public class ProductDAOImpl implements ProductDAO {
             return affected > 0;
 
         } catch(SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Грешка при обновяване на продукт с ID=" + product.getId(), e);
         }
-        return false;
     }
 
     @Override
     public Optional<Product> findActiveById(Long id){
         return findById(id).filter(Product::isActive);
+    }
+
+    private Product mapRowToProduct(ResultSet rs) throws SQLException{
+
+        Product p = new Product();
+
+        p.setId(rs.getLong("id"));
+        p.setName(rs.getString("name"));
+        p.setPrice(rs.getBigDecimal("price"));
+        p.setActive(rs.getBoolean("is_active"));
+        return p;
+
     }
 
 }

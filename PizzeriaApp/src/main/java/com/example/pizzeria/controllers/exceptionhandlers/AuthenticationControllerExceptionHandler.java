@@ -1,7 +1,7 @@
 package com.example.pizzeria.controllers.exceptionhandlers;
 
 import com.example.pizzeria.controllers.AuthenticationController;
-import com.example.pizzeria.domain.exceptions.UserAlreadyExistsException;
+import com.example.pizzeria.services.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

@@ -1,6 +1,7 @@
 package com.example.pizzeria.console.menu.employee;
 
 import com.example.pizzeria.console.controller.OrderController;
+import com.example.pizzeria.console.exceptions.ConsoleServerException;
 import com.example.pizzeria.console.model.MenuItem;
 import com.example.pizzeria.dto.OrderDTO;
 import com.example.pizzeria.printing.OrderDTOPrinter;
@@ -37,8 +38,10 @@ public class AllOrdersMenuItem implements MenuItem {
             String table = OrderDTOPrinter.getPrintedOrders(allOrders);
             System.out.println(table);
 
-        } catch (Exception e) {
-            System.out.println("Грешка при зареждане на поръчки.");
+        } catch (ConsoleServerException ex) {
+            System.out.println(ex.getMessage());
+        } catch (Exception ex){
+            System.out.println("Неочаквана грешка.");
         }
     }
 }

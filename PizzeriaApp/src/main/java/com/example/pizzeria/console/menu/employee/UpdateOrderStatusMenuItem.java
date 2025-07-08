@@ -1,6 +1,8 @@
 package com.example.pizzeria.console.menu.employee;
 
 import com.example.pizzeria.console.controller.OrderController;
+import com.example.pizzeria.console.exceptions.ConsoleServerException;
+import com.example.pizzeria.console.exceptions.ConsoleValidationException;
 import com.example.pizzeria.console.model.MenuItem;
 import com.example.pizzeria.dto.OrderDTO;
 import com.example.pizzeria.printing.OrderDTOPrinter;
@@ -50,8 +52,10 @@ public class UpdateOrderStatusMenuItem implements MenuItem {
 
             orderController.updateOrderStatus(id, status);
 
-        } catch (Exception e) {
-            System.out.println("Грешка при обновяване на статус.");
+        } catch (ConsoleValidationException | ConsoleServerException ex) {
+            System.out.println(ex.getMessage());
+        } catch (Exception ex){
+            System.out.println("Неочаквана грешка.");
         }
     }
 }

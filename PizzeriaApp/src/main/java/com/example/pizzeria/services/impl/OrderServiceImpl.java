@@ -8,6 +8,10 @@ import com.example.pizzeria.models.User;
 import com.example.pizzeria.repositories.interfaces.OrderDAO;
 import com.example.pizzeria.repositories.interfaces.ProductDAO;
 import com.example.pizzeria.services.DelayedOrder;
+import com.example.pizzeria.services.exceptions.InvalidOrderException;
+import com.example.pizzeria.services.exceptions.InvalidProductException;
+import com.example.pizzeria.services.exceptions.OrderNotFoundException;
+import com.example.pizzeria.services.exceptions.OrderProcessingException;
 import com.example.pizzeria.services.interfaces.OrderService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,11 +56,9 @@ public class OrderServiceImpl implements OrderService {
                     try{
 
                         DelayedOrder delayed = queue.take();
-                        //Order o  = delayed.getOrder();
                         Long id = delayed.getOrderId();
+
                         synchronized (dbLock){
-                            //o.setStatus(OrderStatus.DELIVERED);
-                            //orderDAO.save(o);
                             orderDAO.updateStatus(id, OrderStatus.DELIVERED);
                         }
                     } catch (InterruptedException e){
@@ -70,15 +72,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean createOrder(List<Long> productIds) {
+    public Order createOrder(List<Long> productIds) {
 
         User currentUser = ConsoleSession.getCurrentUser();
 
         if (currentUser == null || currentUser.getId() == null) {
-
-            System.out.println("Не сте влезли в системата.");
-            return false;
-
+            throw new InvalidOrderException("Не сте влезли в системата.");
         }
 
         List<Product> products = productIds.stream()
@@ -88,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
 
         if(products.isEmpty())
-            return false;
+            throw new InvalidOrderException("Няма валидни продукти за поръчка.");
 
         Order order = new Order();
         order.setUser(currentUser);
@@ -96,12 +95,20 @@ public class OrderServiceImpl implements OrderService {
         products.forEach(order::addProduct);
 
         synchronized (dbLock) {
-            orderDAO.save(order);
+
+            try{
+                if(!orderDAO.save(order)){
+                    throw new OrderProcessingException("Неуспешно създаване на поръчката.", null);
+                }
+            } catch (Exception ex){
+                throw new OrderProcessingException("Грешка при запис на поръчката в базата.", ex);
+            }
+
         }
 
         Long id = order.getId();
         queue.put(new DelayedOrder(id, 30, TimeUnit.SECONDS));
-        return true;
+        return order;
 
     }
 
@@ -129,8 +136,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean updateOrderStatus(Long orderId, OrderStatus newStatus) {
-        return orderDAO.updateStatus(orderId, newStatus);
+   public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
+
+        boolean ok;
+
+        try {
+            ok = orderDAO.updateStatus(orderId, newStatus);
+        } catch (Exception ex) {
+            throw new OrderProcessingException("Грешка при обновяване статуса в базата.", ex);
+        }
+        if (!ok) {
+            throw new OrderNotFoundException(orderId);
+        }
+
     }
 
     @Override
@@ -139,34 +157,44 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean repeatOrder(Long orderId) {
+    public Order repeatOrder(Long orderId) {
 
         Optional<Order> orderOpt = orderDAO.findById(orderId);
 
-        if(orderOpt.isPresent()){
+        Order original = orderOpt
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
 
-            Order original = orderOpt.get();
+        if(original.getStatus() != OrderStatus.DELIVERED){
+            throw new InvalidOrderException("Поръчка с ID=" + orderId + " още не е доставена.");
+        }
 
-            if(original.getStatus() != OrderStatus.DELIVERED)
-                return false;
+        Order newOrder = new Order();
+        newOrder.setUser(original.getUser());
+        original.getProducts().forEach(newOrder::addProduct);
 
-//            List<Long> productIds = original.getProducts()
-//                    .stream()
-//                    .map(Product::getId)
-//                    .collect(Collectors.toList());
-//            return createOrder(productIds);
+        synchronized (dbLock){
 
-            Order newOrder = new Order();
-            newOrder.setUser(original.getUser());
-            original.getProducts().forEach(newOrder::addProduct);
+            try{
 
-            synchronized (dbLock) {
-                return orderDAO.save(newOrder);
+                if(!orderDAO.save(newOrder)){
+                    throw new OrderProcessingException("Неуспешно повторение на поръчка.", null);
+                }
+
+            } catch (Exception ex){
+                throw new OrderProcessingException("Грешка при запис на повторената поръчка." , ex);
             }
+
+            queue.put(new DelayedOrder(newOrder.getId(), 30, TimeUnit.SECONDS));
 
         }
 
-        return false;
+        return newOrder;
+
+    }
+
+    @Override
+    public List<Order> getDeliveredAfter (LocalDateTime since){
+        return orderDAO.findDeliveredAfter(since);
     }
 
 }

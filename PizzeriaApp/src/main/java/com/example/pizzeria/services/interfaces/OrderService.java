@@ -8,14 +8,16 @@ import java.util.List;
 
 public interface OrderService {
 
-    boolean createOrder(List<Long> productIds);
+    Order createOrder(List<Long> productIds);
     List<Order> getOrdersByStatus(OrderStatus status);
     List<Order> getAllOrders();
-    boolean updateOrderStatus(Long orderId, OrderStatus newStatus);
+    void updateOrderStatus(Long orderId, OrderStatus newStatus);
     List<Order> getOrdersByPeriod(LocalDateTime start, LocalDateTime end);
-    boolean repeatOrder(Long orderId);
+    Order repeatOrder(Long orderId);
 
     List<Order> getOrdersByUser();
 
     List<Order> getOrdersByUserId(Long userId);
+
+    List<Order> getDeliveredAfter(LocalDateTime since);
 }

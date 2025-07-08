@@ -2,6 +2,9 @@ package com.example.pizzeria.services.impl;
 
 import com.example.pizzeria.models.Product;
 import com.example.pizzeria.repositories.interfaces.ProductDAO;
+import com.example.pizzeria.services.exceptions.InvalidProductException;
+import com.example.pizzeria.services.exceptions.ProductNotFoundException;
+import com.example.pizzeria.services.exceptions.ProductProcessingException;
 import com.example.pizzeria.services.interfaces.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,10 +24,30 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean addProduct(String name, BigDecimal price) {
+    public Product addProduct (String name, BigDecimal price){
+
+        if(name == null || name.isBlank()){
+            throw new InvalidProductException("Името на продукта не може да е празно.");
+        }
+
+        if(price == null || price.signum() <= 0){
+            throw new InvalidProductException("Цената трябва да е положително число.");
+        }
 
         Product product = new Product(name, price);
-        return productDAO.save(product);
+        boolean ok;
+
+        try{
+            ok = productDAO.save(product);
+        } catch (Exception ex){
+            throw new ProductProcessingException("Грешка при запис на продукт в базата.", ex);
+        }
+
+        if(!ok){
+            throw new ProductProcessingException("Неуспешно добавяне на прдукта." , null);
+        }
+
+        return product;
 
     }
 
@@ -34,18 +57,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean deactivateProduct(Long productId) {
+    public void deactivateProduct(Long productId){
 
-        Optional<Product> productOpt = productDAO.findById(productId);
+        Product product = productDAO.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
-        if(productOpt.isPresent()){
+        product.setActive(false);
+        boolean ok;
 
-            Product product = productOpt.get();
-            product.setActive(false);
-            return productDAO.update(product);
-
+        try{
+            ok = productDAO.update(product);
+        } catch (Exception ex){
+            throw new ProductProcessingException("Грешка при деактивиране на продукт в базата.", ex);
         }
 
-        return false;
+        if(!ok){
+            throw new ProductProcessingException("Неуспешно деактивиране на продукт.", null);
+        }
     }
 }

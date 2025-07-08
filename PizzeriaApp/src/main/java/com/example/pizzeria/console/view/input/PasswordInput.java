@@ -1,26 +1,30 @@
 package com.example.pizzeria.console.view.input;
 
-import com.example.pizzeria.console.validations.PasswordValidation;
+import com.example.pizzeria.console.validation.validators.PasswordValidator;
+import com.example.pizzeria.console.validation.ValidationResult;
+import com.example.pizzeria.console.validation.Validator;
 
 import java.util.Scanner;
 
 public class PasswordInput {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Validator validator = new PasswordValidator();
+    private final Scanner scanner = new Scanner(System.in);
 
-    public static String readPassword(String message) {
+    public String readPassword(String message) {
 
         while (true) {
 
             System.out.print(message);
 
-            String password = scanner.nextLine();
+            String input = scanner.nextLine();
 
-            if(PasswordValidation.isValid(password)){
-                return password;
-            }
+            ValidationResult vr = validator.validate(input);
 
-            System.out.println("Невалидна парола. Опитайте отново.");
+            if(vr.isValid())
+                return input;
+
+            System.out.println(vr.getErrorMessage());
 
         }
     }

@@ -6,11 +6,13 @@ import com.example.pizzeria.enumerators.UserRole;
 import com.example.pizzeria.models.Order;
 import com.example.pizzeria.models.Product;
 import com.example.pizzeria.models.User;
+import com.example.pizzeria.repositories.DataAccessException;
 import com.example.pizzeria.repositories.interfaces.OrderDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ public class OrderDAOImpl implements OrderDAO {
 
             if(affected == 0)
                 return false;
+
             ResultSet keys = ps.getGeneratedKeys();
 
             if(keys.next())
@@ -57,14 +60,14 @@ public class OrderDAOImpl implements OrderDAO {
                 for(Product product : order.getProducts()){
 
                     addProductToOrder(order.getId(), product.getId(), conn);
+
                 }
 
             }
             return true;
-        } catch(SQLException e) {
-            e.printStackTrace();
+        } catch(SQLException ex) {
+            throw new DataAccessException("Не може да се запише поръчка за userId=" + (order.getUser() != null ? order.getUser().getId() : "null"), ex);
         }
-        return false;
     }
 
     private void addProductToOrder(Long orderId, Long productId, Connection conn) {
@@ -78,7 +81,10 @@ public class OrderDAOImpl implements OrderDAO {
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+
+            throw new DataAccessException(
+                    "Не може да се свръже поръчка " + orderId + " с продукт " + productId, e
+            );
         }
     }
 
@@ -99,6 +105,12 @@ public class OrderDAOImpl implements OrderDAO {
                 order.setId(rs.getLong("id"));
                 order.setStatus(OrderStatus.valueOf(rs.getString("status")));
                 order.setCreatedOn(rs.getTimestamp("created_on").toLocalDateTime());
+
+                Timestamp deliveredTs = rs.getTimestamp("delivered_on");
+                if(deliveredTs != null){
+                    order.setDeliveredOn(deliveredTs.toLocalDateTime());
+                }
+
                 order.getProducts().addAll(getProductsForOrder(order.getId(), conn));
 
                 Optional<User> userOpt = getUserById(rs.getLong("user_id"), conn);
@@ -110,7 +122,7 @@ public class OrderDAOImpl implements OrderDAO {
             }
 
         } catch(SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Не може да се зареди поръчка id=" + id, e);
         }
         return Optional.empty();
     }
@@ -118,7 +130,7 @@ public class OrderDAOImpl implements OrderDAO {
     private List<Product> getProductsForOrder(Long orderId, Connection conn) {
 
         List<Product> products = new ArrayList<>();
-        // products. - извлича данните само за продуктите
+
         String sql = """
                      SELECT products.* FROM products
                      JOIN order_products ON products.id = order_products.product_id
@@ -142,7 +154,7 @@ public class OrderDAOImpl implements OrderDAO {
             }
 
         } catch(SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Не могат да се заредят продукти за поръчка " + orderId, e);
         }
         return products;
     }
@@ -165,13 +177,19 @@ public class OrderDAOImpl implements OrderDAO {
                 order.setId(rs.getLong("id"));
                 order.setStatus(OrderStatus.valueOf(rs.getString("status")));
                 order.setCreatedOn(rs.getTimestamp("created_on").toLocalDateTime());
+
+                Timestamp deliveredTs = rs.getTimestamp("delivered_on");
+                if(deliveredTs != null){
+                    order.setDeliveredOn(deliveredTs.toLocalDateTime());
+                }
+
                 order.getProducts().addAll(getProductsForOrder(order.getId(), conn));
                 orders.add(order);
 
             }
 
         } catch(SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Не могат да се заредят поръчки със статус " + status, e);
         }
         return orders;
     }
@@ -193,6 +211,12 @@ public class OrderDAOImpl implements OrderDAO {
                 order.setId(rs.getLong("id"));
                 order.setStatus(OrderStatus.valueOf(rs.getString("status")));
                 order.setCreatedOn(rs.getTimestamp("created_on").toLocalDateTime());
+
+                Timestamp deliveredTs = rs.getTimestamp("delivered_on");
+                if(deliveredTs != null){
+                    order.setDeliveredOn(deliveredTs.toLocalDateTime());
+                }
+
                 order.getProducts().addAll(getProductsForOrder(order.getId(), conn));
 
                 Optional<User> userOpt = getUserById(rs.getLong("user_id"), conn);
@@ -202,7 +226,7 @@ public class OrderDAOImpl implements OrderDAO {
             }
 
         } catch(SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Не могат да се заредят поръчките на uderId=" + id, e);
         }
         return orders;
 
@@ -234,7 +258,7 @@ public class OrderDAOImpl implements OrderDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Не може да се зареди потребител id=" + userId, e);
         }
         return Optional.empty();
     }
@@ -256,12 +280,18 @@ public class OrderDAOImpl implements OrderDAO {
                 order.setId(rs.getLong("id"));
                 order.setStatus(OrderStatus.valueOf(rs.getString("status")));
                 order.setCreatedOn(rs.getTimestamp("created_on").toLocalDateTime());
+
+                Timestamp deliveredTs = rs.getTimestamp("delivered_on");
+                if(deliveredTs != null){
+                    order.setDeliveredOn(deliveredTs.toLocalDateTime());
+                }
+
                 order.getProducts().addAll(getProductsForOrder(order.getId(), conn));
                 orders.add(order);
 
             }
         } catch(SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Не могат да се заредят всички поръчки" , e);
         }
         return orders;
     }
@@ -269,20 +299,26 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public boolean updateStatus(Long orderId, OrderStatus newStatus) {
 
-        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        String sql = """
+                UPDATE orders
+                SET status = ?,
+                delivered_on = CASE WHEN ? = 'DELIVERED' THEN CURRENT_TIMESTAMP
+                ELSE delivered_on END
+                WHERE id = ?
+                """;
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, newStatus.name());
-            ps.setLong(2, orderId);
+            ps.setString(2, newStatus.name());
+            ps.setLong(3, orderId);
             int affected = ps.executeUpdate();
             return affected > 0;
 
         } catch(SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Не може да се обнови статуса на поръчка  " + orderId, e);
         }
-        return false;
     }
 
     @Override
@@ -304,15 +340,60 @@ public class OrderDAOImpl implements OrderDAO {
                 order.setId(rs.getLong("id"));
                 order.setStatus(OrderStatus.valueOf(rs.getString("status")));
                 order.setCreatedOn(rs.getTimestamp("created_on").toLocalDateTime());
+
+                Timestamp deliveredTs = rs.getTimestamp("delivered_on");
+                if(deliveredTs != null){
+                    order.setDeliveredOn(deliveredTs.toLocalDateTime());
+                }
+
                 order.getProducts().addAll(getProductsForOrder(order.getId(), conn));
                 orders.add(order);
 
             }
 
         } catch(SQLException e) {
-            e.printStackTrace();
+            throw new DataAccessException("Не могат да се заредят поръчки между " + start + " и " + end, e);
         }
         return orders;
+    }
+
+    @Override
+    public List<Order> findDeliveredAfter(LocalDateTime since){
+
+        List<Order> orders = new ArrayList<>();
+
+        String sql  = "SELECT * FROM orders WHERE status = ? AND delivered_on > ?";
+
+        try(Connection conn = dataSource.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, OrderStatus.DELIVERED.name());
+            ps.setTimestamp(2, Timestamp.valueOf(since));
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()) {
+
+                Order order = new Order();
+                order.setId(rs.getLong("id"));
+                order.setStatus(OrderStatus.DELIVERED);
+                order.setCreatedOn(rs.getTimestamp("created_on").toLocalDateTime());
+
+                Timestamp deliveredTs = rs.getTimestamp("delivered_on");
+
+                if (deliveredTs != null) {
+                    order.setDeliveredOn(deliveredTs.toLocalDateTime());
+                }
+
+                order.getProducts().addAll(getProductsForOrder(order.getId(), conn));
+                getUserById(rs.getLong("user_id"), conn).ifPresent(order::setUser);
+                orders.add(order);
+
+            }
+        } catch (SQLException еx){
+                throw new DataAccessException("Не могат да се заредят нови доставени поръчки след " + since, еx);
+        }
+            return orders;
+
     }
 
 }

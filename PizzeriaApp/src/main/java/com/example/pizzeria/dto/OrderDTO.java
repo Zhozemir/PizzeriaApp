@@ -9,6 +9,8 @@ public class OrderDTO {
     private String createdOn;
     private List<String> productNames;
 
+    private String deliveredOn;
+
     public Long getId() {
         return id;
     }
@@ -39,5 +41,13 @@ public class OrderDTO {
 
     public void setProductNames(List<String> productNames) {
         this.productNames = productNames;
+    }
+
+    public String getDeliveredOn() {
+        return deliveredOn;
+    }
+
+    public void setDeliveredOn(String deliveredOn) {
+        this.deliveredOn = deliveredOn;
     }
 }

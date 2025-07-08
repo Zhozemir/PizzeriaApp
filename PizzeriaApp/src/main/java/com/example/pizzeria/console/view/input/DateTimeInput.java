@@ -1,25 +1,30 @@
 package com.example.pizzeria.console.view.input;
 
-import com.example.pizzeria.console.validations.DateTimeValidation;
+import com.example.pizzeria.console.validation.validators.DateTimeValidator;
+import com.example.pizzeria.console.validation.ValidationResult;
+import com.example.pizzeria.console.validation.Validator;
 
 import java.util.Scanner;
 
 public class DateTimeInput {
 
-      private static final Scanner scanner = new Scanner(System.in);
+    private final Validator validator = new DateTimeValidator();
+    private static final Scanner scanner = new Scanner(System.in);
 
-      public static String readDateTime(String message) {
+
+    public String readDateTime(String message) {
 
          while (true) {
 
             System.out.print(message);
             String input = scanner.nextLine().trim();
 
-            if(DateTimeValidation.isValid(input)){
-                return input;
-            }
+             ValidationResult vr = validator.validate(input);
 
-             System.out.println("Невалиден формат за дата/час. Пример: 2023-03-01T00:00");
+             if(vr.isValid())
+                 return input;
+
+             System.out.println(vr.getErrorMessage());
 
          }
     }

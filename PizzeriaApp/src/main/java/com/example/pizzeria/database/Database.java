@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 @Component
@@ -63,15 +62,13 @@ public class Database {
                    user_id BIGINT,
                    FOREIGN KEY (user_id) REFERENCES users(id),
                    status VARCHAR(50),
-                   created_on TIMESTAMP
+                   created_on TIMESTAMP,
+                   delivered_on TIMESTAMP
                    )
                    """;
 
-            // da napravq foreign key kum user (za da printiram orderi za vseki user)
-
             stmt.execute(createOrderTable);
 
-            // съврзваща таблица между поръчки и продукти
             String createOrderProductsTable = """
                      CREATE TABLE IF NOT EXISTS order_products (
                     order_id BIGINT,

@@ -1,25 +1,29 @@
 package com.example.pizzeria.console.view.input;
 
-import com.example.pizzeria.console.validations.ProductIdsValidation;
+import com.example.pizzeria.console.validation.validators.ProductIdsValidator;
+import com.example.pizzeria.console.validation.ValidationResult;
+import com.example.pizzeria.console.validation.Validator;
 
 import java.util.Scanner;
 
 public class ProductIdsInput {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Validator validator = new ProductIdsValidator();
+    private final Scanner scanner = new Scanner(System.in);
 
-    public static String readProductIds(String message) {
+    public String readProductIds(String message) {
 
         while (true) {
 
             System.out.print(message);
             String input = scanner.nextLine().trim();
 
-            if(ProductIdsValidation.isValid(input)){
-                return input;
-            }
+            ValidationResult vr = validator.validate(input);
 
-            System.out.println("Невалидни ID-та. Моля, въведете само числа, разделени със запетая. Пример: 1,2,3");
+            if(vr.isValid())
+                return input;
+
+            System.out.println(vr.getErrorMessage());
 
         }
     }

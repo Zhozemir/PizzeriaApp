@@ -23,4 +23,6 @@ public interface OrderDAO {
 
     List<Order> findByUserId(Long id);
 
+    List<Order> findDeliveredAfter(LocalDateTime since);
+
 }

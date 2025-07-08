@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 public class DelayedOrder implements Delayed {
 
-    //private final Order order;
     private final Long orderId;
     private final long triggerTime;
 
@@ -32,6 +31,7 @@ public class DelayedOrder implements Delayed {
 
         if(other == this)
             return 0;
+
         long diff = this.triggerTime - ((DelayedOrder) other).triggerTime;
         return Long.compare(diff, 0L);
 

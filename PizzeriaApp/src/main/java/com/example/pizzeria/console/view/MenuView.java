@@ -1,7 +1,6 @@
 package com.example.pizzeria.console.view;
 
 import com.example.pizzeria.console.model.MenuItem;
-import com.example.pizzeria.console.validations.ChoiceValidation;
 import com.example.pizzeria.console.view.input.ChoiceInput;
 
 import java.util.List;
@@ -12,6 +11,7 @@ public class MenuView {
     private final String title;
     private final List<MenuItem> items;
     private final Scanner scanner = new Scanner(System.in);
+    private final ChoiceInput choiceInput = new ChoiceInput();
 
     public MenuView(String title, List<MenuItem> items){
 
@@ -32,7 +32,7 @@ public class MenuView {
 
     private int readUserChoice() {
 
-        int choice = ChoiceInput.readChoice("Избор: ");
+        int choice = choiceInput.readChoice("Избор: ");
 
         if (choice < 1 || choice > items.size()) {
 

@@ -7,8 +7,7 @@ import java.util.List;
 
 public interface ProductService {
 
-    boolean addProduct(String name, BigDecimal price);
+    Product addProduct (String name, BigDecimal price);
     List<Product> getActiveProducts();
-    boolean deactivateProduct(Long productId);
-
+    void deactivateProduct(Long productId);
 }

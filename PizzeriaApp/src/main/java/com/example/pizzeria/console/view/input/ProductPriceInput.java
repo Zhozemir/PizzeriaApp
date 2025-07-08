@@ -1,14 +1,17 @@
 package com.example.pizzeria.console.view.input;
 
-import com.example.pizzeria.console.validations.ProductPriceValidation;
+import com.example.pizzeria.console.validation.validators.ProductPriceValidator;
+import com.example.pizzeria.console.validation.ValidationResult;
+import com.example.pizzeria.console.validation.Validator;
 
 import java.util.Scanner;
 
 public class ProductPriceInput {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Validator validator = new ProductPriceValidator();
+    private final Scanner scanner = new Scanner(System.in);
 
-    public static double readProductPrice(String message) {
+    public double readProductPrice(String message) {
 
         while(true) {
 
@@ -16,11 +19,12 @@ public class ProductPriceInput {
 
             String input = scanner.nextLine().trim();
 
-            if(ProductPriceValidation.isValid(input)){
-                return Double.parseDouble(input);
-            }
+            ValidationResult vr = validator.validate(input);
 
-            System.out.println("Невалидна стойност за цена на продукт. Опитайте отново.");
+            if(vr.isValid())
+                return Double.parseDouble(input);
+
+            System.out.println(vr.getErrorMessage());
 
         }
     }

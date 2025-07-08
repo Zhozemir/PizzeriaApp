@@ -1,26 +1,30 @@
 package com.example.pizzeria.console.view.input;
 
-import com.example.pizzeria.console.validations.PhoneValidation;
+import com.example.pizzeria.console.validation.validators.PhoneValidator;
+import com.example.pizzeria.console.validation.ValidationResult;
+import com.example.pizzeria.console.validation.Validator;
 
 import java.util.Scanner;
 
 public class PhoneInput {
 
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Validator validator = new PhoneValidator();
+    private final Scanner scanner = new Scanner(System.in);
 
-    public static String readPhone(String message) {
+    public String readPhone(String message) {
 
         while(true) {
 
             System.out.print(message);
 
-            String phone = scanner.nextLine().trim();
+            String input = scanner.nextLine().trim();
 
-            if(PhoneValidation.isValid(phone)){
-                return phone;
-            }
+            ValidationResult vr = validator.validate(input);
 
-            System.out.println("Грешка! Телефонният номер трябва да съдържа само цифри и по избор да започва с '+'. Опитайте отново.");
+            if(vr.isValid())
+                return input;
+
+            System.out.println(vr.getErrorMessage());
 
         }
     }

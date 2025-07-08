@@ -1,19 +1,14 @@
 package com.example.pizzeria.console.view;
 
-import com.example.pizzeria.console.ConsoleSession;
 import com.example.pizzeria.console.NotificationService;
 import com.example.pizzeria.console.controller.OrderController;
 import com.example.pizzeria.console.controller.ProductController;
-import com.example.pizzeria.console.http.HttpClientService;
 import com.example.pizzeria.console.menu.customer.CreateOrderMenuItem;
 import com.example.pizzeria.console.menu.customer.LogoutMenuItem;
 import com.example.pizzeria.console.menu.customer.MyOrderMenuItem;
 import com.example.pizzeria.console.menu.customer.RepeatOrderMenuItem;
 import com.example.pizzeria.console.model.MenuItem;
 import com.example.pizzeria.console.notifications.OrderDeliveredListener;
-import com.example.pizzeria.console.validations.IdValidation;
-import com.example.pizzeria.dto.OrderDTO;
-import com.example.pizzeria.dto.ProductDTO;
 
 import java.util.List;
 import java.util.Scanner;
